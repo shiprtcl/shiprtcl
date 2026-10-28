@@ -1,10 +1,10 @@
-<!-- {"title": "SHIPRTCL — the Self-Healing Ingestion Protocol", "description": "An open protocol for detecting structural drift in webhooks and API payloads and repairing it with cached, auditable mapping rules. LLMs see shapes, never values, and never touch the hot path.", "path": "/", "script": "home.js", "jsonld": "software"} -->
+<!-- {"title": "SHIPRTCL — the Self-Healing Ingestion Protocol", "description": "An open protocol for detecting structural drift in third-party data — webhooks, API responses, file drops — and repairing it with cached, auditable mapping rules. LLMs see shapes, never values, and never touch the hot path.", "path": "/", "script": "home.js", "jsonld": "software"} -->
 <section class="hero">
   <div class="wrap grid">
     <div>
       <span class="eyebrow">Open protocol · v0.1 draft · Apache-2.0 / CC-BY-4.0</span>
       <h1 style="margin-top:18px">Upstream APIs drift.<br><em>Your ingestion heals.</em></h1>
-      <p class="lede">SHIPRTCL — the Self-Healing Ingestion Protocol — fingerprints the <em>structure</em> of every webhook and API payload, maps it to your contract with a declarative rule, and repairs renamed, nested and retyped fields once. It never repairs them per request, and it never lets a model see your data.</p>
+      <p class="lede">SHIPRTCL — the Self-Healing Ingestion Protocol — fingerprints the <em>structure</em> of the third-party data you ingest — webhooks, API responses, partner file drops — maps it to your contract with a declarative rule, and repairs renamed, nested and retyped fields once. It never repairs them per request, and it never lets a model see your data.</p>
       <div class="btns">
         <a class="btn" href="{{base}}playground/">Try the playground →</a>
         <a class="btn ghost" href="{{base}}whitepaper/">Read the whitepaper</a>
@@ -51,7 +51,7 @@
     <header>
       <span class="eyebrow">How it works</span>
       <h2>Drift is rare. Traffic is constant. So do the hard part once.</h2>
-      <p class="muted">A webhook endpoint sees millions of payloads in a handful of distinct structures. SHIPRTCL recognizes the structure on every request for the price of a hash, and only works out how to map it the first time it is seen.</p>
+      <p class="muted">An integration sees millions of payloads in a handful of distinct structures. SHIPRTCL recognizes the structure on every request for the price of a hash, and only works out how to map it the first time it is seen.</p>
     </header>
     <ol class="steps">
       <li><span class="n">01</span><h3>Fingerprint</h3><p>Normalize JSON, form, CSV or XML into one tree. Discard every value. Hash the sorted <code>(path, type)</code> pairs.</p></li>
@@ -74,6 +74,21 @@
       <div class="rung"><span class="name"><span class="badge b-synthesized">match</span></span><p>A deterministic matcher maps <code>event_type→event</code>, <code>buyer.email_addr→customer.email</code> and <code>qty→quantity</code> from names and types alone, with a confidence score.</p><span class="cost">sub-ms · once per shape</span></div>
       <div class="rung"><span class="name"><span class="badge b-held">model</span></span><p>Optional. Any OpenAI-compatible endpoint (Workers AI, Ollama, vLLM). It sees a redacted skeleton of paths and types, and its output is checked against both structures.</p><span class="cost">~1 call per new shape</span></div>
       <div class="rung"><span class="name"><span class="badge b-shadow">human</span></span><p>Low-confidence and model-assisted rules wait in <em>shadow</em>. You approve, reject or edit. Every rule carries its provenance.</p><span class="cost">policy-driven</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="scope">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Scope</span>
+      <h2>Not just webhooks. Every direction third-party data flows.</h2>
+      <p class="muted">The engine maps any payload to any contract. How the payload travels decides which runtime rules apply, and v0.1 doesn't specify all of them yet. Here is exactly where each case stands.</p>
+    </header>
+    <div class="ladder">
+      <div class="rung"><span class="name"><span class="badge b-active">v0.1</span></span><p><b>Inbound, pushed to you</b> — webhooks, partner POSTs, CSV and form drops. The spec, engine and reference proxy all cover it today.</p><span class="cost">spec §10 · proxy</span></div>
+      <div class="rung"><span class="name"><span class="badge b-synthesized">SEP-0001</span></span><p><b>Inbound, you fetch it</b> — your app calls a vendor API and the response shape drifts. The engine already translates responses as a library. A gateway mode with synchronous misses and fail-closed errors is proposed.</p><span class="cost"><a href="{{repo}}/blob/main/spec/proposals/0001-request-response-mode.md">read the proposal →</a></span></div>
+      <div class="rung"><span class="name"><span class="badge b-held">SEP-0002</span></span><p><b>Outbound, you write to them</b> — your payload is stable, but the vendor's accepted schema changes. That is <em>contract drift</em>: detected from schema diffs and rejections, repaired by re-mapping, and never auto-activated for writes.</p><span class="cost"><a href="{{repo}}/blob/main/spec/proposals/0002-outbound-and-contract-drift.md">read the proposal →</a></span></div>
     </div>
   </div>
 </section>
@@ -148,6 +163,7 @@ r.events      <span class="c">// CloudEvents audit trail, value-free</span></pre
       <li><span><b>Valid isn't the same as correct.</b> <span>Two same-typed fields can be swapped and still validate. That's why there's confidence, shadow mode and review.</span></span></li>
       <li><span><b>The matcher speaks English.</b> <span>Other naming conventions fall through to the model or to a human.</span></span></li>
       <li><span><b>XML and YAML are specified, not yet implemented.</b> <span>The reference implementation covers JSON, form bodies and CSV/TSV today.</span></span></li>
+      <li><span><b>Outbound calls aren't covered yet.</b> <span>When a vendor changes what it accepts, that's contract drift, specified in SEP-0002. The gateway mode for fetched responses is SEP-0001.</span></span></li>
       <li><span><b>The reference proxy is single-node.</b> <span>It demonstrates the runtime rules. It isn't a production gateway yet.</span></span></li>
     </ul>
   </div>
@@ -158,7 +174,7 @@ r.events      <span class="c">// CloudEvents audit trail, value-free</span></pre
     <header><span class="eyebrow">Roadmap</span><h2>Toward a frozen 1.0.</h2></header>
     <div class="roadmap">
       <div class="card"><h3><span class="badge b-active">now</span> v0.1</h3><ul><li>Spec draft, whitepaper</li><li>TypeScript reference engine &amp; proxy</li><li>Conformance vectors, playground</li></ul></div>
-      <div class="card"><h3><span class="badge b-synthesized">next</span> v0.2–0.3</h3><ul><li>XML &amp; YAML in the reference implementation</li><li>OpenAPI / Zod contract importers</li><li>Open drift corpus and published matcher accuracy</li><li>A second implementation (Rust or Go)</li></ul></div>
+      <div class="card"><h3><span class="badge b-synthesized">next</span> v0.2–0.3</h3><ul><li>SEP-0001: request/response gateway mode</li><li>SEP-0002: outbound translation and contract drift</li><li>XML &amp; YAML; OpenAPI / Zod contract importers</li><li>Open drift corpus, published matcher accuracy</li><li>A second implementation (Rust or Go)</li></ul></div>
       <div class="card"><h3><span class="badge b-held">later</span> v1.0</h3><ul><li>Frozen fingerprint and SML</li><li>Conformance badge</li><li>Multi-stakeholder governance if adoption warrants it</li></ul></div>
     </div>
   </div>

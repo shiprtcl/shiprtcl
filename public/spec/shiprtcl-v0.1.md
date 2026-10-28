@@ -28,6 +28,8 @@ SHIPRTCL defines how an ingestion component detects that the *structure* of an i
 8. **runtime requirements** for acknowledgement, delivery, signatures, idempotency and quarantine; and
 9. a set of **audit events** expressed as CloudEvents.
 
+**Scope of v0.1.** §3–§9 and §11 apply to any payload an engine receives, however it arrives. §10 specifies the runtime for **pushed** payloads (webhooks, partner POSTs, file drops). Two further modes are under proposal: synchronous translation of **fetched** API responses ([SEP-0001](https://github.com/shiprtcl/shiprtcl/blob/main/spec/proposals/0001-request-response-mode.md)), and **outbound** translation, where the vendor's accepted schema drifts rather than the payload ([SEP-0002](https://github.com/shiprtcl/shiprtcl/blob/main/spec/proposals/0002-outbound-and-contract-drift.md)).
+
 ## 1. Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 ([RFC 2119], [RFC 8174]) when, and only when, they appear in all capitals.
@@ -36,7 +38,7 @@ JSON is as defined in [RFC 8259]. JSON Pointer is as defined in [RFC 6901]. Hexa
 
 ## 2. Terminology
 
-- **Upstream** — the party that sends payloads (a SaaS webhook, a partner, a file drop). Upstreams are untrusted: they control both the values and the key names of what they send.
+- **Upstream** — the party whose payloads the engine receives (a SaaS webhook, an API whose responses are consumed, a partner, a file drop). Upstreams are untrusted: they control both the values and the key names of what they send.
 - **Downstream** — the consumer that receives translated payloads and has published a contract.
 - **Engine** — a component that implements this specification. A **proxy** is an engine exposed over HTTP.
 - **IAST** — Intermediate Abstract Syntax Tree: a JSON value produced from any wire format by §3.
@@ -355,6 +357,8 @@ Engines MUST make activation a configurable policy. RECOMMENDED defaults:
 Rules MUST be stored durably with their provenance; an in-memory cache MAY front the store but MUST NOT be the only copy. Engines MUST support retiring a rule and SHOULD keep retired rules for audit.
 
 ## 10. Runtime requirements
+
+This section specifies the runtime for pushed payloads. Request/response translation is proposed in SEP-0001.
 
 ### 10.1 Acknowledgement
 

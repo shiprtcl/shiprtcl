@@ -24,7 +24,7 @@ The steady-state cost is a hash and a lookup. Our TypeScript reference implement
 
 ### 1.1 The problem: structure is an unwritten contract
 
-A webhook consumer is a parser for a format someone else controls. The producer's documentation describes the format, but the consumer's code depends on the format as it actually arrives — every key name, every nesting level, every type. Hyrum's Law applies with full force: whatever the producer emits, someone depends on.
+Every consumer of third-party data — a webhook handler, an API client parsing responses, a job importing partner files — is a parser for a format someone else controls. The producer's documentation describes the format, but the consumer's code depends on the format as it actually arrives — every key name, every nesting level, every type. Hyrum's Law applies with full force: whatever the producer emits, someone depends on.
 
 Producers do try. Stripe pins every account to an API version and transforms responses backwards through a chain of version-change modules [Leach 2017], which is possibly the most rigorous approach in the industry. Most producers are not Stripe. In practice consumers see:
 
@@ -53,7 +53,7 @@ Each of these is a small engineering task. Collectively, across dozens of integr
 
 ### 1.3 Our approach
 
-SHIPRTCL's central observation is that **drift is rare, while traffic is constant**. A webhook endpoint may receive millions of payloads in a handful of distinct structures. If we can recognize a structure cheaply and exactly, then the expensive work — deciding how a structure maps to the consumer's contract — happens once per structure, not once per payload, and its result can be inspected, versioned and reused like any other configuration.
+SHIPRTCL's central observation is that **drift is rare, while traffic is constant**. An integration may receive millions of payloads in a handful of distinct structures. If we can recognize a structure cheaply and exactly, then the expensive work — deciding how a structure maps to the consumer's contract — happens once per structure, not once per payload, and its result can be inspected, versioned and reused like any other configuration.
 
 This splits the problem in two:
 
@@ -97,6 +97,8 @@ Because a rule is data in a deliberately weak language, it can be proposed by an
                           synthesizer (optional,   quarantine
                           sees skeleton only)      (encrypted)
 ```
+
+The engine is indifferent to *how* a payload arrives. It can be **pushed** (webhooks, partner POSTs, file drops) or **fetched** (an API response your application requested). Version 0.1 specifies the runtime for pushed payloads; fetched responses can be translated with the engine as a library today, and a synchronous gateway mode is proposed in SEP-0001. The reverse direction — **outbound** calls, where your payload is stable but the vendor's accepted schema drifts — is a different problem, which §11 discusses.
 
 The **upstream** is untrusted. It controls values and key names, and it may be compromised or malicious. The **engine** runs inside the consumer's trust boundary: the consumer operates it, or a provider operates it on their behalf. The **contract** is the consumer's declaration of what it accepts. The **synthesizer** is outside the trust boundary by default and receives only what §7.2 allows.
 
@@ -269,12 +271,13 @@ We would rather list these than have readers discover them.
 7. **The reference proxy is single-node.** Deduplication is in memory, rules live in a local file, and there is no replay UI. It demonstrates the runtime requirements. It is not yet a production gateway.
 8. **The proxy is a trusted intermediary.** It sees plaintext payloads and holds signing secrets, so it must run inside, or be contractually bound to, the consumer's trust boundary. "Zero code" does not mean "zero trust".
 9. **No synthesis-quality benchmark yet.** We have not published accuracy numbers for the matcher or for model-assisted synthesis against a labelled corpus of real-world drifts. Building that corpus openly is the most valuable contribution the community could make. Valentine [Koutras et al. 2021] is a model for how such an evaluation could be run.
-10. **Draft status.** The fingerprint algorithm may change before 1.0. If it does, the `sr1` prefix will change, so old and new fingerprints can never be confused.
+10. **Outbound calls are not covered.** When your application writes to a vendor, the payload is yours and its fingerprint never changes; what drifts is the vendor's contract. v0.1 cannot detect this. SEP-0002 proposes contract drift detection (schema diffs, rejections, deprecation headers) with stricter rules for writes. The synchronous gateway for fetched responses (SEP-0001) is also not yet specified.
+11. **Draft status.** The fingerprint algorithm may change before 1.0. If it does, the `sr1` prefix will change, so old and new fingerprints can never be confused.
 
 ## 11. Roadmap
 
-- **0.2:** XML and YAML in the reference implementation; contract importers for OpenAPI and Zod; a replay API for quarantine; a durable SQLite store.
-- **0.3:** an open drift corpus and evaluation harness; publication of matcher accuracy; a second implementation in Rust or Go, to prove the specification stands on its own.
+- **0.2:** **request/response gateway mode** (SEP-0001); XML and YAML in the reference implementation; contract importers for OpenAPI and Zod; a replay API for quarantine; a durable SQLite store.
+- **0.3:** **outbound translation and contract drift** (SEP-0002), where your payload is stable but the vendor's schema moves. Detection comes from schema diffs, rejections and `Deprecation`/`Sunset` headers. Repair works by composing the existing rule with a contract-to-contract bridge, and writes are never auto-activated. Also: an open drift corpus with published matcher accuracy, and a second implementation in Rust or Go.
 - **1.0:** a frozen fingerprint algorithm and SML, a conformance badge, and a governance hand-off to a multi-stakeholder group if adoption warrants it.
 
 Proposals follow a lightweight SHIPRTCL Enhancement Proposal (SEP) process, described in the repository.

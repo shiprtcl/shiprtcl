@@ -70,12 +70,13 @@
 <li><strong>runtime requirements</strong> for acknowledgement, delivery, signatures, idempotency and quarantine; and</li>
 <li>a set of <strong>audit events</strong> expressed as CloudEvents.</li>
 </ol>
+<p><strong>Scope of v0.1.</strong> §3–§9 and §11 apply to any payload an engine receives, however it arrives. §10 specifies the runtime for <strong>pushed</strong> payloads (webhooks, partner POSTs, file drops). Two further modes are under proposal: synchronous translation of <strong>fetched</strong> API responses (<a href="https://github.com/shiprtcl/shiprtcl/blob/main/spec/proposals/0001-request-response-mode.md">SEP-0001</a>), and <strong>outbound</strong> translation, where the vendor&#39;s accepted schema drifts rather than the payload (<a href="https://github.com/shiprtcl/shiprtcl/blob/main/spec/proposals/0002-outbound-and-contract-drift.md">SEP-0002</a>).</p>
 <h2 id="1-conventions">1. Conventions<a class="anchor" href="#1-conventions" aria-label="Link to this section">#</a></h2>
 <p>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 ([RFC 2119], [RFC 8174]) when, and only when, they appear in all capitals.</p>
 <p>JSON is as defined in [RFC 8259]. JSON Pointer is as defined in [RFC 6901]. Hexadecimal strings are lowercase.</p>
 <h2 id="2-terminology">2. Terminology<a class="anchor" href="#2-terminology" aria-label="Link to this section">#</a></h2>
 <ul>
-<li><strong>Upstream</strong> — the party that sends payloads (a SaaS webhook, a partner, a file drop). Upstreams are untrusted: they control both the values and the key names of what they send.</li>
+<li><strong>Upstream</strong> — the party whose payloads the engine receives (a SaaS webhook, an API whose responses are consumed, a partner, a file drop). Upstreams are untrusted: they control both the values and the key names of what they send.</li>
 <li><strong>Downstream</strong> — the consumer that receives translated payloads and has published a contract.</li>
 <li><strong>Engine</strong> — a component that implements this specification. A <strong>proxy</strong> is an engine exposed over HTTP.</li>
 <li><strong>IAST</strong> — Intermediate Abstract Syntax Tree: a JSON value produced from any wire format by §3.</li>
@@ -450,6 +451,7 @@
 <h3 id="93-provenance-and-rollback">9.3 Provenance and rollback<a class="anchor" href="#93-provenance-and-rollback" aria-label="Link to this section">#</a></h3>
 <p>Rules MUST be stored durably with their provenance; an in-memory cache MAY front the store but MUST NOT be the only copy. Engines MUST support retiring a rule and SHOULD keep retired rules for audit.</p>
 <h2 id="10-runtime-requirements">10. Runtime requirements<a class="anchor" href="#10-runtime-requirements" aria-label="Link to this section">#</a></h2>
+<p>This section specifies the runtime for pushed payloads. Request/response translation is proposed in SEP-0001.</p>
 <h3 id="101-acknowledgement">10.1 Acknowledgement<a class="anchor" href="#101-acknowledgement" aria-label="Link to this section">#</a></h3>
 <p>A proxy SHOULD acknowledge an upstream request with <code>202 Accepted</code> once the body is received, its signature verified (§10.3) and its media type parsed, and SHOULD perform resolution, delivery and quarantine asynchronously. A proxy MUST respond <code>401</code> to failed signature verification, <code>413</code> to oversized bodies, <code>415</code> to unsupported media types and <code>400</code> to unparseable bodies. Synchronous synthesis inside the upstream&#39;s request is NOT RECOMMENDED: upstream timeouts are short and concurrent drift would multiply model calls.</p>
 <h3 id="102-delivery">10.2 Delivery<a class="anchor" href="#102-delivery" aria-label="Link to this section">#</a></h3>

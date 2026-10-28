@@ -22,7 +22,7 @@
 
 ---
 
-Third-party webhooks and APIs change shape without asking you. Fields get renamed, nested, retyped, or switched from JSON to CSV, and your ingestion breaks in production.
+Third-party data changes shape without asking you: the webhooks you receive, the API responses you fetch, the files partners drop. Fields get renamed, nested, retyped, or switched from JSON to CSV, and your integration breaks in production.
 
 **SHIPRTCL** is an open protocol for detecting that structural drift and repairing it at the point of ingestion, without hand-written adapters and without sending your data to a model.
 
@@ -39,6 +39,14 @@ payload ──► fingerprint ──► hit?  ───────────�
 - **Fail closed, with receipts.** Output is validated against your contract on every request. Rules carry provenance and pass through `proposed → shadow → active → retired`. Every decision is a value-free CloudEvent.
 
 The fast path costs **0.19 ms p50 / 0.58 ms p99** in plain TypeScript on one core (see `npm run bench`).
+
+## Scope
+
+| Direction | Example | Status |
+|---|---|---|
+| **Inbound, pushed** | webhooks, partner POSTs, CSV/form drops | ✅ v0.1 spec, engine and proxy |
+| **Inbound, fetched** | your app calls a vendor API and the response drifts | ⚙️ engine works as a library today; gateway mode in [SEP-0001](spec/proposals/0001-request-response-mode.md) |
+| **Outbound** | the vendor changes the request schema it accepts (*contract drift*) | 📐 proposed in [SEP-0002](spec/proposals/0002-outbound-and-contract-drift.md) |
 
 ## What's in this repository
 

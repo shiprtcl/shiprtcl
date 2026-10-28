@@ -2,7 +2,7 @@
 
 ## Today
 
-SHIPRTCL was created by **Srishesh Archik**, who currently serves as **spec editor** and **lead maintainer**.
+SHIPRTCL was created by **Srishesh Archik** ([@Srishesh-Archik](https://github.com/Srishesh-Archik)), who currently serves as **spec editor** and **lead maintainer**.
 
 - The **spec editor** owns `spec/`, assigns SEP numbers and records SEP decisions after public discussion.
 - **Maintainers** review and merge code. New maintainers are invited after sustained, high-quality contributions.

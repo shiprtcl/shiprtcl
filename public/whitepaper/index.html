@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL</title>
-<meta name="description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<meta name="description" content="The SHIPRTCL whitepaper: why third-party API and webhook drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
 <link rel="canonical" href="https://shiprtcl.org/whitepaper/">
 
 <meta name="author" content="Srishesh Archik">
@@ -13,7 +13,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="SHIPRTCL">
 <meta property="og:title" content="Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL">
-<meta property="og:description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<meta property="og:description" content="The SHIPRTCL whitepaper: why third-party API and webhook drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
 <meta property="og:url" content="https://shiprtcl.org/whitepaper/">
 <meta property="og:image" content="https://shiprtcl.org/og.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="SHIPRTCL — Upstream APIs drift. Your ingestion heals.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL">
-<meta name="twitter:description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<meta name="twitter:description" content="The SHIPRTCL whitepaper: why third-party API and webhook drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
 <meta name="twitter:image" content="https://shiprtcl.org/og.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css?v=b31a971a27">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","name":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","description":"The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.","author":{"@type":"Person","name":"Srishesh Archik"},"datePublished":"2026-10-29","dateModified":"2026-10-29","version":"0.1","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","url":"https://shiprtcl.org/whitepaper/","publisher":{"@type":"Organization","name":"SHIPRTCL","url":"https://shiprtcl.org"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","name":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","description":"The SHIPRTCL whitepaper: why third-party API and webhook drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.","author":{"@type":"Person","name":"Srishesh Archik"},"datePublished":"2026-10-29","dateModified":"2026-10-29","version":"0.1","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","url":"https://shiprtcl.org/whitepaper/","publisher":{"@type":"Organization","name":"SHIPRTCL","url":"https://shiprtcl.org"}}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -62,7 +62,7 @@
 <p>The steady-state cost is a hash and a lookup. Our TypeScript reference implementation translates and validates a typical 1.4 KB webhook in <strong>0.19 ms at the median and 0.58 ms at p99</strong> on a single core, without native code. The specification, reference implementation, conformance vectors and an in-browser playground are released under CC-BY-4.0 and Apache-2.0.</p>
 <h2 id="1-introduction">1. Introduction<a class="anchor" href="#1-introduction" aria-label="Link to this section">#</a></h2>
 <h3 id="11-the-problem-structure-is-an-unwritten-contract">1.1 The problem: structure is an unwritten contract<a class="anchor" href="#11-the-problem-structure-is-an-unwritten-contract" aria-label="Link to this section">#</a></h3>
-<p>A webhook consumer is a parser for a format someone else controls. The producer&#39;s documentation describes the format, but the consumer&#39;s code depends on the format as it actually arrives — every key name, every nesting level, every type. Hyrum&#39;s Law applies with full force: whatever the producer emits, someone depends on.</p>
+<p>Every consumer of third-party data — a webhook handler, an API client parsing responses, a job importing partner files — is a parser for a format someone else controls. The producer&#39;s documentation describes the format, but the consumer&#39;s code depends on the format as it actually arrives — every key name, every nesting level, every type. Hyrum&#39;s Law applies with full force: whatever the producer emits, someone depends on.</p>
 <p>Producers do try. Stripe pins every account to an API version and transforms responses backwards through a chain of version-change modules [Leach 2017], which is possibly the most rigorous approach in the industry. Most producers are not Stripe. In practice consumers see:</p>
 <ul>
 <li><strong>renames</strong> — <code>email</code> becomes <code>email_address</code>, <code>type</code> becomes <code>event_type</code>;</li>
@@ -81,7 +81,7 @@
 <p><strong>Integration platforms</strong> (Airbyte, Apache Camel, iPaaS products) provide connector catalogues maintained by a vendor or community. They are excellent when a connector exists and is current, and they are adapters again when it is not.</p>
 <p><strong>LLM-in-the-loop transformation</strong> — asking a model to rewrite each payload — is too slow, too expensive and too nondeterministic for the hot path, and it sends customer data to a third party on every request.</p>
 <h3 id="13-our-approach">1.3 Our approach<a class="anchor" href="#13-our-approach" aria-label="Link to this section">#</a></h3>
-<p>SHIPRTCL&#39;s central observation is that <strong>drift is rare, while traffic is constant</strong>. A webhook endpoint may receive millions of payloads in a handful of distinct structures. If we can recognize a structure cheaply and exactly, then the expensive work — deciding how a structure maps to the consumer&#39;s contract — happens once per structure, not once per payload, and its result can be inspected, versioned and reused like any other configuration.</p>
+<p>SHIPRTCL&#39;s central observation is that <strong>drift is rare, while traffic is constant</strong>. An integration may receive millions of payloads in a handful of distinct structures. If we can recognize a structure cheaply and exactly, then the expensive work — deciding how a structure maps to the consumer&#39;s contract — happens once per structure, not once per payload, and its result can be inspected, versioned and reused like any other configuration.</p>
 <p>This splits the problem in two:</p>
 <ol>
 <li><strong>Recognition</strong> (every request): compute a value-independent structural fingerprint and look it up. This is pure computation over the payload with no network calls, and it costs microseconds.</li>
@@ -120,6 +120,7 @@
                           synthesizer (optional,   quarantine
                           sees skeleton only)      (encrypted)
 </code></pre>
+<p>The engine is indifferent to <em>how</em> a payload arrives. It can be <strong>pushed</strong> (webhooks, partner POSTs, file drops) or <strong>fetched</strong> (an API response your application requested). Version 0.1 specifies the runtime for pushed payloads; fetched responses can be translated with the engine as a library today, and a synchronous gateway mode is proposed in SEP-0001. The reverse direction — <strong>outbound</strong> calls, where your payload is stable but the vendor&#39;s accepted schema drifts — is a different problem, which §11 discusses.</p>
 <p>The <strong>upstream</strong> is untrusted. It controls values and key names, and it may be compromised or malicious. The <strong>engine</strong> runs inside the consumer&#39;s trust boundary: the consumer operates it, or a provider operates it on their behalf. The <strong>contract</strong> is the consumer&#39;s declaration of what it accepts. The <strong>synthesizer</strong> is outside the trust boundary by default and receives only what §7.2 allows.</p>
 <h2 id="4-structural-fingerprints">4. Structural fingerprints<a class="anchor" href="#4-structural-fingerprints" aria-label="Link to this section">#</a></h2>
 <h3 id="41-normalization">4.1 Normalization<a class="anchor" href="#41-normalization" aria-label="Link to this section">#</a></h3>
@@ -274,12 +275,13 @@
 <li><strong>The reference proxy is single-node.</strong> Deduplication is in memory, rules live in a local file, and there is no replay UI. It demonstrates the runtime requirements. It is not yet a production gateway.</li>
 <li><strong>The proxy is a trusted intermediary.</strong> It sees plaintext payloads and holds signing secrets, so it must run inside, or be contractually bound to, the consumer&#39;s trust boundary. &quot;Zero code&quot; does not mean &quot;zero trust&quot;.</li>
 <li><strong>No synthesis-quality benchmark yet.</strong> We have not published accuracy numbers for the matcher or for model-assisted synthesis against a labelled corpus of real-world drifts. Building that corpus openly is the most valuable contribution the community could make. Valentine [Koutras et al. 2021] is a model for how such an evaluation could be run.</li>
+<li><strong>Outbound calls are not covered.</strong> When your application writes to a vendor, the payload is yours and its fingerprint never changes; what drifts is the vendor&#39;s contract. v0.1 cannot detect this. SEP-0002 proposes contract drift detection (schema diffs, rejections, deprecation headers) with stricter rules for writes. The synchronous gateway for fetched responses (SEP-0001) is also not yet specified.</li>
 <li><strong>Draft status.</strong> The fingerprint algorithm may change before 1.0. If it does, the <code>sr1</code> prefix will change, so old and new fingerprints can never be confused.</li>
 </ol>
 <h2 id="11-roadmap">11. Roadmap<a class="anchor" href="#11-roadmap" aria-label="Link to this section">#</a></h2>
 <ul>
-<li><strong>0.2:</strong> XML and YAML in the reference implementation; contract importers for OpenAPI and Zod; a replay API for quarantine; a durable SQLite store.</li>
-<li><strong>0.3:</strong> an open drift corpus and evaluation harness; publication of matcher accuracy; a second implementation in Rust or Go, to prove the specification stands on its own.</li>
+<li><strong>0.2:</strong> <strong>request/response gateway mode</strong> (SEP-0001); XML and YAML in the reference implementation; contract importers for OpenAPI and Zod; a replay API for quarantine; a durable SQLite store.</li>
+<li><strong>0.3:</strong> <strong>outbound translation and contract drift</strong> (SEP-0002), where your payload is stable but the vendor&#39;s schema moves. Detection comes from schema diffs, rejections and <code>Deprecation</code>/<code>Sunset</code> headers. Repair works by composing the existing rule with a contract-to-contract bridge, and writes are never auto-activated. Also: an open drift corpus with published matcher accuracy, and a second implementation in Rust or Go.</li>
 <li><strong>1.0:</strong> a frozen fingerprint algorithm and SML, a conformance badge, and a governance hand-off to a multi-stakeholder group if adoption warrants it.</li>
 </ul>
 <p>Proposals follow a lightweight SHIPRTCL Enhancement Proposal (SEP) process, described in the repository.</p>

@@ -149,7 +149,7 @@ async function emit(path, meta, body) {
 const person = { '@type': 'Person', name: AUTHOR };
 const software = {
   '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: 'SHIPRTCL', alternateName: 'Self-Healing Ingestion Protocol',
-  description: 'Open protocol and reference implementation for structural fingerprinting and self-healing ingestion of webhooks and API payloads.',
+  description: 'Open protocol and reference implementation for structural fingerprinting and self-healing ingestion of third-party data: webhooks, API responses and file drops.',
   url: SITE_URL + '/', codeRepository: REPO, programmingLanguage: 'TypeScript', license: 'https://www.apache.org/licenses/LICENSE-2.0',
   author: person, creator: person, dateCreated: DATE, version: VERSION,
 };
@@ -232,7 +232,7 @@ async function docPage({ src, path, title, description, eyebrow, raw, kind }) {
 await docPage({
   src: 'whitepaper/shiprtcl-whitepaper.md', path: '/whitepaper/', kind: 'ScholarlyArticle', eyebrow: 'Whitepaper',
   title: 'Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules',
-  description: 'The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.',
+  description: 'The SHIPRTCL whitepaper: why third-party API and webhook drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.',
   raw: 'whitepaper/shiprtcl-whitepaper.md',
 });
 await docPage({

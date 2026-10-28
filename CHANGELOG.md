@@ -2,6 +2,15 @@
 
 All notable changes to the SHIPRTCL specification and reference implementation.
 
+## [Unreleased]
+
+### Proposals
+- SEP-0001: Request/response mode (synchronous translation of fetched API responses).
+- SEP-0002: Outbound translation and contract drift.
+
+### Documentation
+- Scope clarified across the site, spec, whitepaper and README: SHIPRTCL applies to all third-party data the engine receives, not only webhooks.
+
 ## [0.1.1] — 2026-10-29
 
 ### Fixed
