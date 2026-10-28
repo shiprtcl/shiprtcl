@@ -1,0 +1,10 @@
+node_modules/
+packages/*/dist/
+.shiprtcl/
+/shiprtcl.config.json
+.launch/
+*.log
+.DS_Store
+
+# private planning documents — never publish
+*.docx

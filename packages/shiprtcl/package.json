@@ -1,0 +1,56 @@
+{
+  "name": "shiprtcl",
+  "version": "0.1.0",
+  "description": "Reference implementation of SHIPRTCL, the Self-Healing Ingestion Protocol: structural fingerprinting, declarative mapping rules and a drift-tolerant ingestion proxy.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "homepage": "https://shiprtcl.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shiprtcl/shiprtcl.git",
+    "directory": "packages/shiprtcl"
+  },
+  "bugs": "https://github.com/shiprtcl/shiprtcl/issues",
+  "keywords": [
+    "webhooks",
+    "schema-drift",
+    "api",
+    "ingestion",
+    "proxy",
+    "json-schema",
+    "fingerprint",
+    "protocol",
+    "llm"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./proxy": {
+      "types": "./dist/proxy.d.ts",
+      "default": "./dist/proxy.js"
+    }
+  },
+  "bin": {
+    "shiprtcl-proxy": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3"
+  }
+}

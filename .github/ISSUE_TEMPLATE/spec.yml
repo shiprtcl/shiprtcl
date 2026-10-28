@@ -1,0 +1,12 @@
+name: Spec feedback
+description: Ambiguity, error or improvement in the specification.
+labels: [spec]
+body:
+  - type: input
+    id: section
+    attributes: { label: Section, placeholder: "§4.4 Map classification" }
+    validations: { required: true }
+  - type: textarea
+    id: issue
+    attributes: { label: Feedback, description: Quote the text and explain the problem. Larger changes should become a SEP. }
+    validations: { required: true }

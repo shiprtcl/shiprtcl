@@ -1,0 +1,38 @@
+<!-- {"title": "Playground — SHIPRTCL", "description": "Break a webhook and watch SHIPRTCL heal it: structural fingerprints, absorption, deterministic rule synthesis, review and quarantine, running entirely in your browser.", "path": "/playground/", "script": "playground.js"} -->
+<div class="wrap">
+  <div class="pg-head">
+    <span class="eyebrow">Playground · runs entirely in your browser</span>
+    <h1 style="margin-top:14px">Break a webhook. Watch it heal.</h1>
+    <p class="lede">This is the real reference engine compiled to JavaScript. Pick a scenario, or edit the contract and payload yourself. Nothing leaves this page; the model step is switched off here, so everything you see is the deterministic matcher.</p>
+    <div class="pg-bar" role="toolbar" aria-label="Scenarios"><span class="lbl">Scenarios</span><span id="pg-chips"></span></div>
+  </div>
+  <p class="notice" id="pg-explain"></p>
+  <div class="pg">
+    <section class="panel" aria-labelledby="h-contract">
+      <header><h2 id="h-contract">Your contract</h2><span class="eyebrow">JSON Schema subset</span></header>
+      <textarea id="pg-contract" spellcheck="false" aria-label="Contract JSON"></textarea>
+    </section>
+    <section class="panel" aria-labelledby="h-payload">
+      <header>
+        <h2 id="h-payload">Upstream payload</h2>
+        <select id="pg-type" aria-label="Media type">
+          <option>application/json</option>
+          <option>application/x-www-form-urlencoded</option>
+          <option>text/csv</option>
+          <option>text/tab-separated-values</option>
+        </select>
+      </header>
+      <textarea id="pg-payload" spellcheck="false" aria-label="Payload"></textarea>
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--rule);align-items:center">
+        <button class="btn sm" id="pg-send" type="button">Send payload</button>
+        <button class="btn sm ghost" id="pg-reset" type="button">Reset cache</button>
+        <span class="eyebrow" style="margin-left:auto">⌘/Ctrl + Enter</span>
+      </div>
+    </section>
+    <section class="panel out" aria-labelledby="h-out" aria-live="polite">
+      <header><h2 id="h-out">Engine</h2><span class="eyebrow">resolution · rule · output</span></header>
+      <div class="body" id="pg-out"><p class="muted">Loading engine…</p></div>
+      <ul class="cache-list" id="pg-cache" aria-label="Rule store"></ul>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+{
+  "name": "shiprtcl-monorepo",
+  "private": true,
+  "description": "SHIPRTCL — the Self-Healing Ingestion Protocol: specification, whitepaper, reference implementation and site.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w shiprtcl",
+    "test": "npm test -w shiprtcl",
+    "vectors": "node scripts/gen-vectors.mjs",
+    "bench": "node scripts/bench.mjs",
+    "site": "node scripts/build-site.mjs",
+    "all": "npm run build && npm run vectors && npm test && npm run site"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "esbuild": "^0.28.2",
+    "marked": "^14.1.4"
+  }
+}

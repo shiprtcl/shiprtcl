@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use or build on SHIPRTCL, please cite it as below."
+title: "SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules"
+abstract: "An open protocol for detecting structural drift in webhooks and API payloads and repairing it with value-independent structural fingerprints, a verifiable declarative mapping language, and privacy-bounded rule synthesis."
+type: software
+authors:
+  - given-names: Srishesh
+    family-names: Archik
+version: "0.1.0"
+date-released: "2026-10-29"
+license: Apache-2.0
+url: "https://shiprtcl.org"
+repository-code: "https://github.com/shiprtcl/shiprtcl"
+keywords:
+  - webhooks
+  - schema drift
+  - data ingestion
+  - structural fingerprint
+  - schema matching
+  - protocol
+preferred-citation:
+  type: report
+  title: "SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules"
+  authors:
+    - given-names: Srishesh
+      family-names: Archik
+  year: 2026
+  month: 10
+  url: "https://shiprtcl.org/whitepaper/"

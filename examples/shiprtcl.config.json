@@ -1,0 +1,25 @@
+{
+  "listen": { "host": "127.0.0.1", "port": 8787 },
+  "dataDir": ".shiprtcl",
+  "maxBodyBytes": 1048576,
+  "policy": { "autoActivateThreshold": 0.8, "autoActivateSynthesized": false },
+  "contracts": [
+    {
+      "id": "payments.v1",
+      "destination": "http://127.0.0.1:3000/webhooks/payments",
+      "signingSecretEnv": "PAYMENTS_SIGNING_SECRET",
+      "verify": { "scheme": "stripe", "secretEnv": "STRIPE_WEBHOOK_SECRET" },
+      "mapHints": ["/data/object/metadata"],
+      "schema": {
+        "type": "object",
+        "required": ["event", "amount", "currency"],
+        "properties": {
+          "event": { "type": "string" },
+          "amount": { "type": "integer", "minimum": 0 },
+          "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+          "email": { "type": "string" }
+        }
+      }
+    }
+  ]
+}

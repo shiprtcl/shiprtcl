@@ -1,0 +1,18 @@
+name: Bug report
+description: The reference implementation does something the spec says it shouldn't.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: Expected vs actual. }
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Contract + payload (use fake values) + media type. Playground links welcome.
+      render: json
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Version / commit }

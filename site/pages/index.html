@@ -1,0 +1,176 @@
+<!-- {"title": "SHIPRTCL — the Self-Healing Ingestion Protocol", "description": "An open protocol for detecting structural drift in webhooks and API payloads and repairing it with cached, auditable mapping rules. LLMs see shapes, never values, and never touch the hot path.", "path": "/", "script": "home.js", "jsonld": "software"} -->
+<section class="hero">
+  <div class="wrap grid">
+    <div>
+      <span class="eyebrow">Open protocol · v0.1 draft · Apache-2.0 / CC-BY-4.0</span>
+      <h1 style="margin-top:18px">Upstream APIs drift.<br><em>Your ingestion heals.</em></h1>
+      <p class="lede">SHIPRTCL — the Self-Healing Ingestion Protocol — fingerprints the <em>structure</em> of every webhook and API payload, maps it to your contract with a declarative rule, and repairs renamed, nested and retyped fields once. It never repairs them per request, and it never lets a model see your data.</p>
+      <div class="btns">
+        <a class="btn" href="{{base}}playground/">Try the playground →</a>
+        <a class="btn ghost" href="{{base}}whitepaper/">Read the whitepaper</a>
+        <a class="btn ghost" href="{{base}}spec/">Spec v0.1</a>
+      </div>
+      <p class="meta">fingerprint = sha256(canonical(shape(payload)))  ·  values discarded  ·  rules are data, not code</p>
+    </div>
+
+    <div class="live" id="live" aria-live="polite" aria-label="Live demo: payloads flowing through the SHIPRTCL engine in your browser">
+      <header>
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span class="lbl" id="live-step">engine · in your browser</span>
+        <button class="btn sm ghost" id="live-next" type="button" aria-label="Next payload">next ›</button>
+      </header>
+      <div class="pane">
+        <span class="lbl">upstream payload</span>
+        <pre id="live-in">{ … }</pre>
+      </div>
+      <div class="pane">
+        <div class="row">
+          <span class="fp" id="live-fp">sr1:sha256:…</span>
+          <span><span class="badge b-hit" id="live-res">…</span> <span class="badge b-translated" id="live-status">…</span></span>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="row"><span class="lbl">to your contract</span><span class="lbl" id="live-t"></span></div>
+        <pre id="live-out">{ … }</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" style="padding:0">
+  <div class="stats">
+    <div><b>0.19 ms</b><span>p50 fast path, plain TypeScript, one core</span></div>
+    <div><b>0 values</b><span>sent to any model, ever. Shapes only, redacted</span></div>
+    <div><b>8 ops</b><span>in the mapping language. Total, verifiable, no code</span></div>
+    <div><b>22 vectors</b><span>so any language can implement it exactly</span></div>
+  </div>
+</div>
+
+<section class="s" id="how">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">How it works</span>
+      <h2>Drift is rare. Traffic is constant. So do the hard part once.</h2>
+      <p class="muted">A webhook endpoint sees millions of payloads in a handful of distinct structures. SHIPRTCL recognizes the structure on every request for the price of a hash, and only works out how to map it the first time it is seen.</p>
+    </header>
+    <ol class="steps">
+      <li><span class="n">01</span><h3>Fingerprint</h3><p>Normalize JSON, form, CSV or XML into one tree. Discard every value. Hash the sorted <code>(path, type)</code> pairs.</p></li>
+      <li><span class="n">02</span><h3>Resolve</h3><p>Known fingerprint? Use its rule. Unknown? Absorb it into an existing rule if that is provably safe, or synthesize a new one, once.</p></li>
+      <li><span class="n">03</span><h3>Apply &amp; validate</h3><p>Run the declarative rule. Validate the output against your contract on every request, fast path included.</p></li>
+      <li><span class="n">04</span><h3>Release or quarantine</h3><p>Valid output is delivered and re-signed. Anything else is held or quarantined, encrypted, never delivered half-formed.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="s" id="ladder">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">The resolution ladder</span>
+      <h2>Cheapest, safest answer first. The model is the last resort.</h2>
+    </header>
+    <div class="ladder">
+      <div class="rung"><span class="name"><span class="badge b-hit">hit</span></span><p>The fingerprint already has a rule. This is where the overwhelming majority of traffic lands.</p><span class="cost">~0.2 ms · no I/O</span></div>
+      <div class="rung"><span class="name"><span class="badge b-absorbed">absorb</span></span><p>Added fields, omitted optionals, new <code>null</code>s: an existing rule still applies, and SHIPRTCL can show it. The new fingerprint is aliased, and a <em>rename</em> is never mistaken for an absence.</p><span class="cost">sub-ms · no new rule</span></div>
+      <div class="rung"><span class="name"><span class="badge b-synthesized">match</span></span><p>A deterministic matcher maps <code>event_type→event</code>, <code>buyer.email_addr→customer.email</code> and <code>qty→quantity</code> from names and types alone, with a confidence score.</p><span class="cost">sub-ms · once per shape</span></div>
+      <div class="rung"><span class="name"><span class="badge b-held">model</span></span><p>Optional. Any OpenAI-compatible endpoint (Workers AI, Ollama, vLLM). It sees a redacted skeleton of paths and types, and its output is checked against both structures.</p><span class="cost">~1 call per new shape</span></div>
+      <div class="rung"><span class="name"><span class="badge b-shadow">human</span></span><p>Low-confidence and model-assisted rules wait in <em>shadow</em>. You approve, reject or edit. Every rule carries its provenance.</p><span class="cost">policy-driven</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="trust">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Designed to be distrusted</span>
+      <h2>Self-healing that leaves a receipt.</h2>
+      <p class="muted">“Self-healing” doesn't mean your pipeline silently changes behaviour. It means a fix is proposed, checked, applied only when policy allows it, and recorded as a CloudEvent.</p>
+    </header>
+    <div class="cards">
+      <div class="card"><div class="ic">∅</div><h3>Values never leave</h3><p>Fingerprints are built from key paths and types. Map-like objects keyed by ids or emails collapse to <code>MAP</code>, and data-like key names are redacted before any model call.</p></div>
+      <div class="card"><div class="ic">≠</div><h3>Models can't write values</h3><p>Synthesizers may only emit <code>to</code>, <code>from</code>, <code>cast</code> and <code>each</code>, over paths that exist on both sides. Prompt injection through key names is bounded to a wrong-but-valid mapping.</p></div>
+      <div class="card"><div class="ic">⊘</div><h3>Fail closed</h3><p>Every output is validated against your contract, on every request. If it doesn't validate, it isn't delivered.</p></div>
+      <div class="card"><div class="ic">✓</div><h3>Signatures survive</h3><p>Upstream signatures (GitHub, Stripe, HMAC) are verified on the raw body. Translated payloads are re-signed with Standard Webhooks.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="box">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">What's in the box</span>
+      <h2>A protocol first. Implementations second.</h2>
+    </header>
+    <div class="cards">
+      <a class="card" href="{{base}}spec/"><h3>Specification v0.1</h3><p>Normative, RFC-style: fingerprint algorithm, SML, absorption, synthesis constraints, lifecycle, runtime and events.</p><span class="go">read the spec →</span></a>
+      <a class="card" href="{{base}}whitepaper/"><h3>Whitepaper</h3><p>The motivation, design rationale, threat model, measured performance, and an honest list of limitations.</p><span class="go">read the paper →</span></a>
+      <a class="card" href="{{repo}}/tree/main/packages/shiprtcl"><h3>Reference implementation</h3><p>TypeScript, zero runtime dependencies. Engine, matcher, LLM adapter, plus a proxy with signatures, retries, dedupe and an encrypted quarantine.</p><span class="go">view source →</span></a>
+      <a class="card" href="{{base}}conformance/fingerprint-vectors.json"><h3>Conformance vectors</h3><p>22 canonical forms and hashes covering escaping, Unicode, maps, arrays and formats. Reproduce them byte for byte.</p><span class="go">download JSON →</span></a>
+    </div>
+    <div class="split" style="margin-top:40px">
+      <div>
+        <h3>Run it locally</h3>
+<pre class="code">git clone {{repo}}.git && cd shiprtcl
+npm install && npm run all     <span class="c"># build, vectors, 37 tests, site</span>
+
+<span class="c"># fingerprint any payload</span>
+echo '{"a":1,"b":{"c":"x"}}' | node packages/shiprtcl/dist/cli.js fingerprint
+
+<span class="c"># start the reference proxy</span>
+node packages/shiprtcl/dist/cli.js serve shiprtcl.config.json</pre>
+      </div>
+      <div>
+        <h3>Use the engine</h3>
+<pre class="code"><span class="c">// npm i shiprtcl — package publish pending; build from source today</span>
+import { Engine } from 'shiprtcl';
+
+const engine = new Engine({ contracts: [{ id: 'payments.v1', schema }] });
+const r = await engine.process('payments.v1', { body, contentType });
+
+r.status      <span class="c">// 'translated' | 'held' | 'quarantined'</span>
+r.resolution  <span class="c">// 'hit' | 'absorbed' | 'synthesized'</span>
+r.output      <span class="c">// valid against your contract, or undefined</span>
+r.events      <span class="c">// CloudEvents audit trail, value-free</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="limits">
+  <div class="wrap split">
+    <div>
+      <span class="eyebrow">Known limitations</span>
+      <h2 style="margin-top:14px">What SHIPRTCL does not do — yet, or ever.</h2>
+      <p class="muted">We'd rather you read these here than find them in production. The full list is in the whitepaper, §10.</p>
+      <a class="btn ghost" href="{{base}}whitepaper/#10-known-limitations">All limitations →</a>
+    </div>
+    <ul class="limits">
+      <li><span><b>Semantic drift is invisible to structure.</b> <span>Dollars→cents with the same type won't change the fingerprint. Use <code>enum</code>/<code>minimum</code>/<code>maximum</code> to catch it.</span></span></li>
+      <li><span><b>Valid isn't the same as correct.</b> <span>Two same-typed fields can be swapped and still validate. That's why there's confidence, shadow mode and review.</span></span></li>
+      <li><span><b>The matcher speaks English.</b> <span>Other naming conventions fall through to the model or to a human.</span></span></li>
+      <li><span><b>XML and YAML are specified, not yet implemented.</b> <span>The reference implementation covers JSON, form bodies and CSV/TSV today.</span></span></li>
+      <li><span><b>The reference proxy is single-node.</b> <span>It demonstrates the runtime rules. It isn't a production gateway yet.</span></span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="s" id="roadmap">
+  <div class="wrap">
+    <header><span class="eyebrow">Roadmap</span><h2>Toward a frozen 1.0.</h2></header>
+    <div class="roadmap">
+      <div class="card"><h3><span class="badge b-active">now</span> v0.1</h3><ul><li>Spec draft, whitepaper</li><li>TypeScript reference engine &amp; proxy</li><li>Conformance vectors, playground</li></ul></div>
+      <div class="card"><h3><span class="badge b-synthesized">next</span> v0.2–0.3</h3><ul><li>XML &amp; YAML in the reference implementation</li><li>OpenAPI / Zod contract importers</li><li>Open drift corpus and published matcher accuracy</li><li>A second implementation (Rust or Go)</li></ul></div>
+      <div class="card"><h3><span class="badge b-held">later</span> v1.0</h3><ul><li>Frozen fingerprint and SML</li><li>Conformance badge</li><li>Multi-stakeholder governance if adoption warrants it</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Been paged for a renamed field? Help shape the protocol.</h2>
+    <p>Open an issue, propose a SEP, contribute a real-world drift to the corpus, or write a second implementation against the vectors.</p>
+    <div class="btns">
+      <a class="btn" href="{{repo}}">Star &amp; contribute on GitHub</a>
+      <a class="btn ghost" href="{{repo}}/issues/new/choose">Open an issue</a>
+    </div>
+  </div>
+</section>

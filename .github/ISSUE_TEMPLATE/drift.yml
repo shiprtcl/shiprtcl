@@ -1,0 +1,20 @@
+name: Drift example (corpus)
+description: Contribute a real-world structural drift to the open evaluation corpus.
+labels: [corpus]
+body:
+  - type: markdown
+    attributes: { value: "**Shapes only.** Run `shiprtcl fingerprint` on both payloads and paste the path/type output. Never paste real values or secrets." }
+  - type: input
+    id: provider
+    attributes: { label: Provider and API versions (if public), placeholder: "Example: Shopify 2025-07 → 2025-10, orders/create" }
+  - type: textarea
+    id: before
+    attributes: { label: Shape before, render: text }
+    validations: { required: true }
+  - type: textarea
+    id: after
+    attributes: { label: Shape after, render: text }
+    validations: { required: true }
+  - type: textarea
+    id: mapping
+    attributes: { label: Correct mapping, description: Which old path became which new path. SML welcome., render: json }

@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIPRTCL Specification v0.1 — SHIPRTCL</title>
+<meta name="description" content="The normative SHIPRTCL v0.1 specification: IAST normalization, the sr1 structural fingerprint, contracts, the SHIPRTCL Mapping Language, resolution, synthesis constraints, lifecycle, runtime and CloudEvents.">
+<link rel="canonical" href="https://shiprtcl.org/spec/">
+
+<meta name="author" content="Srishesh Archik">
+<meta name="theme-color" content="#f5f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SHIPRTCL">
+<meta property="og:title" content="SHIPRTCL Specification v0.1 — SHIPRTCL">
+<meta property="og:description" content="The normative SHIPRTCL v0.1 specification: IAST normalization, the sr1 structural fingerprint, contracts, the SHIPRTCL Mapping Language, resolution, synthesis constraints, lifecycle, runtime and CloudEvents.">
+<meta property="og:url" content="https://shiprtcl.org/spec/">
+<meta property="og:image" content="https://shiprtcl.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SHIPRTCL — Upstream APIs drift. Your ingestion heals.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SHIPRTCL Specification v0.1 — SHIPRTCL">
+<meta name="twitter:description" content="The normative SHIPRTCL v0.1 specification: IAST normalization, the sr1 structural fingerprint, contracts, the SHIPRTCL Mapping Language, resolution, synthesis constraints, lifecycle, runtime and CloudEvents.">
+<meta name="twitter:image" content="https://shiprtcl.org/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css?v=b31a971a27">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SHIPRTCL Specification v0.1","name":"SHIPRTCL Specification v0.1","description":"The normative SHIPRTCL v0.1 specification: IAST normalization, the sr1 structural fingerprint, contracts, the SHIPRTCL Mapping Language, resolution, synthesis constraints, lifecycle, runtime and CloudEvents.","author":{"@type":"Person","name":"Srishesh Archik"},"datePublished":"2026-10-29","dateModified":"2026-10-29","version":"0.1","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","url":"https://shiprtcl.org/spec/","publisher":{"@type":"Organization","name":"SHIPRTCL","url":"https://shiprtcl.org"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="SHIPRTCL home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor"/><g fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M6.5 8h11M6.5 16h11M6.5 12h4" stroke="var(--bg)"/><path d="M14 12h3.5" stroke="var(--heal)"/></g></svg><span class="word">SHIPRTCL</span></a>
+  <nav class="nav" aria-label="Primary">
+    <a href="/whitepaper/">Whitepaper</a>
+    <a href="/spec/" aria-current="page">Spec</a>
+    <a href="/playground/">Playground</a>
+    <a class="gh" href="https://github.com/shiprtcl/shiprtcl"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="hide-sm">GitHub</span></a>
+  </nav>
+</div></header>
+<main id="main">
+<div class="doc-head"><div class="wrap">
+  <span class="eyebrow">Specification · normative</span>
+  <h1 style="margin-top:14px">SHIPRTCL Specification v0.1</h1>
+  <div class="meta">
+    <span>v0.1 · Draft</span><span>2026-10-29</span><span>Srishesh Archik</span><span>CC-BY-4.0</span>
+    <a href="/spec/shiprtcl-v0.1.md">Markdown source</a><a href="https://github.com/shiprtcl/shiprtcl/blob/main/spec/shiprtcl-v0.1.md">Edit on GitHub</a><a href="javascript:print()">Print / PDF</a>
+  </div>
+</div></div>
+<div class="wrap doc">
+  <nav class="toc" aria-label="Contents"><span class="eyebrow">Contents</span><ol><li><a href="#abstract">Abstract</a></li><li><a href="#1-conventions">1. Conventions</a></li><li><a href="#2-terminology">2. Terminology</a></li><li><a href="#3-ingestion-and-the-iast">3. Ingestion and the IAST</a><ol><li><a href="#31-json">3.1 JSON</a></li><li><a href="#32-form-urlencoded">3.2 Form-urlencoded</a></li><li><a href="#33-csv-and-tsv">3.3 CSV and TSV</a></li><li><a href="#34-xml">3.4 XML</a></li><li><a href="#35-yaml">3.5 YAML</a></li><li><a href="#36-other-formats">3.6 Other formats</a></li></ol></li><li><a href="#4-structural-fingerprint">4. Structural fingerprint</a><ol><li><a href="#41-purpose-and-properties">4.1 Purpose and properties</a></li><li><a href="#42-type-markers">4.2 Type markers</a></li><li><a href="#43-shape-paths-and-the-shape-algorithm">4.3 Shape paths and the shape algorithm</a></li><li><a href="#44-map-classification">4.4 Map classification</a></li><li><a href="#45-canonical-form">4.5 Canonical form</a></li><li><a href="#46-fingerprint-identifier">4.6 Fingerprint identifier</a></li><li><a href="#47-collisions">4.7 Collisions</a></li></ol></li><li><a href="#5-contracts">5. Contracts</a><ol><li><a href="#51-contract-document">5.1 Contract document</a></li><li><a href="#52-schema-subset">5.2 Schema subset</a></li></ol></li><li><a href="#6-the-shiprtcl-mapping-language-sml">6. The SHIPRTCL Mapping Language (SML)</a><ol><li><a href="#61-rule-document">6.1 Rule document</a></li><li><a href="#62-field-list">6.2 Field list</a></li><li><a href="#63-evaluation">6.3 Evaluation</a></li></ol></li><li><a href="#7-rule-resolution">7. Rule resolution</a><ol><li><a href="#71-exact-lookup">7.1 Exact lookup</a></li><li><a href="#72-absorption">7.2 Absorption</a></li><li><a href="#73-synthesis">7.3 Synthesis</a></li><li><a href="#74-decision">7.4 Decision</a></li></ol></li><li><a href="#8-synthesis">8. Synthesis</a><ol><li><a href="#81-deterministic-matching">8.1 Deterministic matching</a></li><li><a href="#82-synthesizer-input-privacy-boundary">8.2 Synthesizer input (privacy boundary)</a></li><li><a href="#83-verification-of-synthesizer-output">8.3 Verification of synthesizer output</a></li></ol></li><li><a href="#9-rule-lifecycle">9. Rule lifecycle</a><ol><li><a href="#91-states">9.1 States</a></li><li><a href="#92-activation-policy">9.2 Activation policy</a></li><li><a href="#93-provenance-and-rollback">9.3 Provenance and rollback</a></li></ol></li><li><a href="#10-runtime-requirements">10. Runtime requirements</a><ol><li><a href="#101-acknowledgement">10.1 Acknowledgement</a></li><li><a href="#102-delivery">10.2 Delivery</a></li><li><a href="#103-signatures">10.3 Signatures</a></li><li><a href="#104-idempotency">10.4 Idempotency</a></li><li><a href="#105-quarantine">10.5 Quarantine</a></li><li><a href="#106-bounding-drift">10.6 Bounding drift</a></li></ol></li><li><a href="#11-events">11. Events</a></li><li><a href="#12-conformance">12. Conformance</a></li><li><a href="#13-security-considerations">13. Security considerations</a></li><li><a href="#14-privacy-considerations">14. Privacy considerations</a></li><li><a href="#15-versioning">15. Versioning</a></li><li><a href="#16-references">16. References</a></li><li><a href="#appendix-a-worked-example">Appendix A. Worked example</a></li></ol></nav>
+  <article class="prose"><h1>SHIPRTCL — Self-Healing Ingestion Protocol</h1>
+<p><strong>Version 0.1 · Draft · 29 October 2026</strong></p>
+<p><strong>Status of this document.</strong> This is a working draft published for public review. It may change in incompatible ways before version 1.0. Feedback is welcome as GitHub issues or as a SHIPRTCL Enhancement Proposal (SEP); see <a href="https://github.com/shiprtcl/shiprtcl/blob/main/GOVERNANCE.md">GOVERNANCE.md</a>.</p>
+<p><strong>Licence.</strong> This specification is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>. The reference implementation is licensed separately under Apache-2.0.</p>
+<h2 id="abstract">Abstract<a class="anchor" href="#abstract" aria-label="Link to this section">#</a></h2>
+<p>SHIPRTCL defines how an ingestion component detects that the <em>structure</em> of an incoming payload has changed, and how it repairs that change with a declarative, auditable mapping rule instead of failing or passing malformed data downstream. It specifies:</p>
+<ol>
+<li>a normalization of wire formats into a common tree (the IAST);</li>
+<li>a value-independent <strong>structural fingerprint</strong> of that tree;</li>
+<li>a <strong>contract</strong> format for what the downstream consumer expects;</li>
+<li>the <strong>SHIPRTCL Mapping Language (SML)</strong>, a small, total, declarative language for translating one structure into another;</li>
+<li>a <strong>resolution procedure</strong> — exact lookup, absorption, synthesis — for choosing which rule applies;</li>
+<li>constraints on <strong>synthesizers</strong> (including LLMs) so they never see payload values and can never emit executable code;</li>
+<li>a <strong>rule lifecycle</strong> with provenance, review and rollback;</li>
+<li><strong>runtime requirements</strong> for acknowledgement, delivery, signatures, idempotency and quarantine; and</li>
+<li>a set of <strong>audit events</strong> expressed as CloudEvents.</li>
+</ol>
+<h2 id="1-conventions">1. Conventions<a class="anchor" href="#1-conventions" aria-label="Link to this section">#</a></h2>
+<p>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 ([RFC 2119], [RFC 8174]) when, and only when, they appear in all capitals.</p>
+<p>JSON is as defined in [RFC 8259]. JSON Pointer is as defined in [RFC 6901]. Hexadecimal strings are lowercase.</p>
+<h2 id="2-terminology">2. Terminology<a class="anchor" href="#2-terminology" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Upstream</strong> — the party that sends payloads (a SaaS webhook, a partner, a file drop). Upstreams are untrusted: they control both the values and the key names of what they send.</li>
+<li><strong>Downstream</strong> — the consumer that receives translated payloads and has published a contract.</li>
+<li><strong>Engine</strong> — a component that implements this specification. A <strong>proxy</strong> is an engine exposed over HTTP.</li>
+<li><strong>IAST</strong> — Intermediate Abstract Syntax Tree: a JSON value produced from any wire format by §3.</li>
+<li><strong>Shape</strong> — the set of (shape path, type markers) pairs of an IAST value (§4).</li>
+<li><strong>Fingerprint</strong> — a hash identifying a shape (§4.6).</li>
+<li><strong>Contract</strong> — the downstream&#39;s declaration of the structure it accepts (§5).</li>
+<li><strong>Rule</strong> — an SML document translating payloads of one shape into a contract (§6).</li>
+<li><strong>Drift</strong> — the arrival of a payload whose fingerprint has no bound rule for the contract.</li>
+<li><strong>Synthesizer</strong> — any procedure that proposes SML fields for a drift: a deterministic matcher, a language model, or a human.</li>
+</ul>
+<h2 id="3-ingestion-and-the-iast">3. Ingestion and the IAST<a class="anchor" href="#3-ingestion-and-the-iast" aria-label="Link to this section">#</a></h2>
+<p>An engine MUST convert each payload into an IAST value before fingerprinting. The IAST is a JSON value. Conversions MUST NOT infer types from the textual content of values; where a wire format has no native types, every scalar is a string. Type coercion is the job of SML <code>cast</code> (§6), where it is explicit and audited.</p>
+<h3 id="31-json">3.1 JSON<a class="anchor" href="#31-json" aria-label="Link to this section">#</a></h3>
+<p>Media types <code>application/json</code> and any <code>+json</code> suffix. The IAST is the parsed document. Duplicate object keys SHOULD be rejected; if accepted, the last occurrence wins. Numbers are carried as IEEE 754 doubles.</p>
+<h3 id="32-form-urlencoded">3.2 Form-urlencoded<a class="anchor" href="#32-form-urlencoded" aria-label="Link to this section">#</a></h3>
+<p>Media type <code>application/x-www-form-urlencoded</code>. The IAST is an object. Every value is a string. A key ending in <code>[]</code> always yields an array of strings under the key without the brackets. Any other key that occurs more than once yields an array of strings in order of occurrence; a key that occurs once yields a string. No other bracket syntax is interpreted.</p>
+<blockquote>
+<p>Note: because a repeated key changes <code>STR</code> into <code>ARR</code>, upstreams that sometimes repeat a key produce two fingerprints. Contracts SHOULD expect this and rules MAY be absorbed (§7.2).</p>
+</blockquote>
+<h3 id="33-csv-and-tsv">3.3 CSV and TSV<a class="anchor" href="#33-csv-and-tsv" aria-label="Link to this section">#</a></h3>
+<p>Media types <code>text/csv</code> (delimiter <code>,</code>) and <code>text/tab-separated-values</code> (delimiter TAB). Parsing follows [RFC 4180] with these clarifications: a leading UTF-8 BOM is ignored; CR, LF and CRLF all end a record; the first record is a header. The IAST is an array of objects, one per non-empty record, keyed by header names. Every cell is a string. Missing trailing cells are the empty string. Cells beyond the header width are stored under keys <code>_&lt;index&gt;</code> where <code>&lt;index&gt;</code> is the zero-based column index.</p>
+<h3 id="34-xml">3.4 XML<a class="anchor" href="#34-xml" aria-label="Link to this section">#</a></h3>
+<p>Media types <code>application/xml</code>, <code>text/xml</code> and <code>+xml</code> suffixes. Each element becomes an object. Namespace prefixes are removed from element and attribute names. Attributes become string members named <code>@&lt;name&gt;</code>. Character content that is not whitespace-only becomes a string member named <code>#text</code>. <strong>Every child element becomes an array</strong>, even if it occurs once, so that the number of occurrences can never change the shape. A contract MAY declare singleton paths, in which case the engine MUST unwrap one-element arrays at exactly those paths. The root is an object with one member, the root element&#39;s name.</p>
+<h3 id="35-yaml">3.5 YAML<a class="anchor" href="#35-yaml" aria-label="Link to this section">#</a></h3>
+<p>Media types <code>application/yaml</code> and <code>application/x-yaml</code>. Only the JSON-compatible subset (YAML 1.2 core schema) is supported. Anchors and aliases MUST be expanded with a bound on expansion size; documents exceeding it MUST be rejected. Tags other than the core schema MUST be rejected.</p>
+<h3 id="36-other-formats">3.6 Other formats<a class="anchor" href="#36-other-formats" aria-label="Link to this section">#</a></h3>
+<p>Engines MAY support further formats. Each MUST document its normalization and MUST NOT infer scalar types from values.</p>
+<blockquote>
+<p>The v0.1 reference implementation supports §3.1–§3.3. §3.4 and §3.5 are specified but not yet implemented.</p>
+</blockquote>
+<h2 id="4-structural-fingerprint">4. Structural fingerprint<a class="anchor" href="#4-structural-fingerprint" aria-label="Link to this section">#</a></h2>
+<h3 id="41-purpose-and-properties">4.1 Purpose and properties<a class="anchor" href="#41-purpose-and-properties" aria-label="Link to this section">#</a></h3>
+<p>The fingerprint identifies a payload&#39;s structure independently of its values. It MUST be:</p>
+<ul>
+<li><strong>value-independent</strong> — two payloads that differ only in scalar values (not types) have the same fingerprint;</li>
+<li><strong>order-independent</strong> — object member order does not affect it;</li>
+<li><strong>cardinality-independent</strong> — array lengths do not affect it, except that an empty array contributes no element entry;</li>
+<li><strong>deterministic across implementations</strong> — byte-identical canonical forms for the same IAST.</li>
+</ul>
+<h3 id="42-type-markers">4.2 Type markers<a class="anchor" href="#42-type-markers" aria-label="Link to this section">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Marker</th>
+<th>IAST value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ARR</code></td>
+<td>array</td>
+</tr>
+<tr>
+<td><code>BOOL</code></td>
+<td><code>true</code> or <code>false</code></td>
+</tr>
+<tr>
+<td><code>MAP</code></td>
+<td>object classified as a map (§4.4)</td>
+</tr>
+<tr>
+<td><code>NULL</code></td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td><code>NUM</code></td>
+<td>number (integers and non-integers alike)</td>
+</tr>
+<tr>
+<td><code>OBJ</code></td>
+<td>object not classified as a map</td>
+</tr>
+<tr>
+<td><code>STR</code></td>
+<td>string</td>
+</tr>
+</tbody></table>
+<p>The canonical order of markers is the order of this table (ASCII order).</p>
+<h3 id="43-shape-paths-and-the-shape-algorithm">4.3 Shape paths and the shape algorithm<a class="anchor" href="#43-shape-paths-and-the-shape-algorithm" aria-label="Link to this section">#</a></h3>
+<p>A <strong>shape path</strong> is a JSON Pointer whose segments are either an escaped object key or the <strong>wildcard segment</strong> <code>~*</code>. The wildcard stands for &quot;every element&quot; of an array or &quot;every value&quot; of a map. <code>~*</code> cannot occur in an RFC 6901 pointer (a <code>~</code> must be followed by <code>0</code> or <code>1</code>), so it never collides with a key; a literal key <code>~*</code> is escaped as <code>~0*</code>.</p>
+<p>The shape of a value <em>V</em> is computed by <code>walk(V, &quot;&quot;)</code> where <code>walk(v, p)</code> is:</p>
+<ol>
+<li>If <em>v</em> is an array: add <code>ARR</code> at <em>p</em>; for each element <em>e</em>, <code>walk(e, p + &quot;/~*&quot;)</code>.</li>
+<li>If <em>v</em> is an object: let <em>K</em> be its keys, each normalized to Unicode NFC [UAX15]. Classify it per §4.4. If it is a map, add <code>MAP</code> at <em>p</em> and for each value <em>e</em>, <code>walk(e, p + &quot;/~*&quot;)</code>. Otherwise add <code>OBJ</code> at <em>p</em> and for each key <em>k</em>, <code>walk(v[k], p + &quot;/&quot; + escape(k))</code>, where <code>escape</code> replaces <code>~</code> with <code>~0</code> then <code>/</code> with <code>~1</code>.</li>
+<li>Otherwise add the scalar&#39;s marker (<code>STR</code>, <code>NUM</code>, <code>BOOL</code>, <code>NULL</code>) at <em>p</em>.</li>
+</ol>
+<p>&quot;Add <em>M</em> at <em>p</em>&quot; inserts <em>M</em> into the set of markers for path <em>p</em>. The <strong>shape</strong> is the list of (path, markers) pairs, sorted by path in ascending Unicode <strong>code point</strong> order (equivalently, UTF-8 byte order — <em>not</em> UTF-16 code unit order), with each marker set listed in canonical order. The root path is the empty string. If two keys of one object normalize to the same NFC string, their subtrees merge.</p>
+<h3 id="44-map-classification">4.4 Map classification<a class="anchor" href="#44-map-classification" aria-label="Link to this section">#</a></h3>
+<p>Objects whose keys are data rather than schema (ids, emails, dates) would otherwise produce a new fingerprint on almost every request, and would leak data into shapes. An object at shape path <em>p</em> MUST be classified as a map if any of these holds:</p>
+<ol>
+<li><em>p</em> appears in the contract&#39;s <code>mapHints</code> (§5.2);</li>
+<li>it has at least one key and <strong>every</strong> key (after NFC) fully matches at least one of:<ul>
+<li><code>^[0-9]+$</code></li>
+<li><code>^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$</code></li>
+<li><code>^[^\s@]+@[^\s@]+\.[^\s@]+$</code></li>
+<li><code>^[0-9]{4}-[0-9]{2}-[0-9]{2}([T ][0-9:.+\-Z]*)?$</code></li>
+<li><code>^[0-9a-fA-F]{16,}$</code></li>
+<li><code>^[A-Za-z]{2,8}_(?=[A-Za-z0-9]*[0-9])[A-Za-z0-9]{8,}$</code></li>
+</ul>
+</li>
+<li>it has more than 256 keys.</li>
+</ol>
+<p>An empty object is never a map unless hinted. Patterns use ECMAScript regular expression semantics.</p>
+<h3 id="45-canonical-form">4.5 Canonical form<a class="anchor" href="#45-canonical-form" aria-label="Link to this section">#</a></h3>
+<p>The canonical form of a shape is the JSON array of two-element arrays <code>[path, markers]</code>, where <code>markers</code> is the marker set joined by <code>|</code>, serialized per the JSON Canonicalization Scheme [RFC 8785]. Since every element is a string, this is the ECMAScript <code>JSON.stringify</code> output with no whitespace.</p>
+<p>Example — for</p>
+<pre><code class="language-json">{&quot;event&quot;:&quot;payment_success&quot;,&quot;customer&quot;:{&quot;email&quot;:&quot;user@example.com&quot;,&quot;id&quot;:9812},&quot;amount&quot;:49.50,&quot;items&quot;:[&quot;sku_1&quot;,&quot;sku_2&quot;]}
+</code></pre>
+<p>the canonical form is</p>
+<pre><code>[[&quot;&quot;,&quot;OBJ&quot;],[&quot;/amount&quot;,&quot;NUM&quot;],[&quot;/customer&quot;,&quot;OBJ&quot;],[&quot;/customer/email&quot;,&quot;STR&quot;],[&quot;/customer/id&quot;,&quot;NUM&quot;],[&quot;/event&quot;,&quot;STR&quot;],[&quot;/items&quot;,&quot;ARR&quot;],[&quot;/items/~*&quot;,&quot;STR&quot;]]
+</code></pre>
+<h3 id="46-fingerprint-identifier">4.6 Fingerprint identifier<a class="anchor" href="#46-fingerprint-identifier" aria-label="Link to this section">#</a></h3>
+<p>The fingerprint is <code>sr1:sha256:</code> followed by the lowercase hex SHA-256 [FIPS 180-4] of the UTF-8 encoding of the canonical form. The example above has fingerprint</p>
+<pre><code>sr1:sha256:687cb54f1c77c419347a344b75fb970457eca760500bfec3f3d326c88171b0ae
+</code></pre>
+<p>The prefix <code>sr1</code> names this algorithm version. Future algorithms MUST use a different prefix. Engines MUST treat fingerprints as opaque strings when comparing.</p>
+<h3 id="47-collisions">4.7 Collisions<a class="anchor" href="#47-collisions" aria-label="Link to this section">#</a></h3>
+<p>SHA-256 collisions are not a practical concern. Two distinct IASTs having the <em>same shape</em> is intended. Engines MUST NOT use the fingerprint as an integrity or authenticity check; it identifies structure only.</p>
+<h2 id="5-contracts">5. Contracts<a class="anchor" href="#5-contracts" aria-label="Link to this section">#</a></h2>
+<h3 id="51-contract-document">5.1 Contract document<a class="anchor" href="#51-contract-document" aria-label="Link to this section">#</a></h3>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;payments.v1&quot;,
+  &quot;schema&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;required&quot;: [&quot;event&quot;], &quot;properties&quot;: { &quot;event&quot;: { &quot;type&quot;: &quot;string&quot; } } },
+  &quot;mapHints&quot;: [&quot;/data/object/metadata&quot;]
+}
+</code></pre>
+<p><code>id</code> is a string unique within an engine. A contract MUST NOT change once rules reference it; publish a new <code>id</code> instead.</p>
+<h3 id="52-schema-subset">5.2 Schema subset<a class="anchor" href="#52-schema-subset" aria-label="Link to this section">#</a></h3>
+<p><code>schema</code> is a JSON Schema [JSON-SCHEMA-2020-12] restricted to these keywords: <code>type</code>, <code>properties</code>, <code>required</code>, <code>additionalProperties</code> (boolean only), <code>items</code> (single schema), <code>enum</code>, <code>minimum</code>, <code>maximum</code>, <code>minLength</code>, <code>maxLength</code>, <code>title</code>, <code>description</code>, <code>$schema</code>, <code>$id</code>. Engines MUST reject contracts using other keywords rather than silently ignoring them. <code>minLength</code> and <code>maxLength</code> count Unicode code points.</p>
+<p><code>mapHints</code> is an OPTIONAL array of shape paths that MUST be classified as maps (§4.4).</p>
+<p>Profiles that translate Zod, TypeScript or Protobuf definitions into this subset MAY be defined separately.</p>
+<h2 id="6-the-shiprtcl-mapping-language-sml">6. The SHIPRTCL Mapping Language (SML)<a class="anchor" href="#6-the-shiprtcl-mapping-language-sml" aria-label="Link to this section">#</a></h2>
+<p>SML is deliberately small. It has no variables, no user-defined functions, no conditionals and no I/O. Every SML program terminates in time linear in the size of the payload. This is what makes it safe to accept rules proposed by an LLM: a rule can be <em>wrong</em>, but it cannot <em>do</em> anything except copy, rename and convert.</p>
+<h3 id="61-rule-document">6.1 Rule document<a class="anchor" href="#61-rule-document" aria-label="Link to this section">#</a></h3>
+<pre><code class="language-json">{
+  &quot;shiprtcl&quot;: &quot;0.1&quot;,
+  &quot;id&quot;: &quot;rule_687cb54f1c77_mvsl0a1b&quot;,
+  &quot;contract&quot;: &quot;payments.v1&quot;,
+  &quot;source&quot;: &quot;sr1:sha256:687cb54f…&quot;,
+  &quot;shape&quot;: [ { &quot;path&quot;: &quot;&quot;, &quot;types&quot;: [&quot;OBJ&quot;] }, &quot;…&quot; ],
+  &quot;state&quot;: &quot;active&quot;,
+  &quot;provenance&quot;: { &quot;method&quot;: &quot;deterministic&quot;, &quot;confidence&quot;: 0.95, &quot;createdAt&quot;: &quot;2026-10-29T10:00:00Z&quot;, &quot;notes&quot;: [] },
+  &quot;fields&quot;: [
+    { &quot;to&quot;: &quot;/event&quot;, &quot;from&quot;: &quot;/event_type&quot; },
+    { &quot;to&quot;: &quot;/customer/id&quot;, &quot;from&quot;: &quot;/buyer/id&quot;, &quot;cast&quot;: &quot;string&quot; },
+    { &quot;to&quot;: &quot;/items&quot;, &quot;from&quot;: &quot;/line_items&quot;, &quot;each&quot;: [ { &quot;to&quot;: &quot;/sku&quot;, &quot;from&quot;: &quot;/sku&quot; } ] }
+  ]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shiprtcl</code></td>
+<td>MUST be <code>&quot;0.1&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>Unique, opaque.</td>
+</tr>
+<tr>
+<td><code>contract</code></td>
+<td>The contract id.</td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>The fingerprint the rule was created for.</td>
+</tr>
+<tr>
+<td><code>shape</code></td>
+<td>The source shape (§4.3) as an array of <code>{path, types}</code> objects. REQUIRED for absorption (§7.2).</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>One of <code>proposed</code>, <code>shadow</code>, <code>active</code>, <code>retired</code> (§9).</td>
+</tr>
+<tr>
+<td><code>provenance</code></td>
+<td><code>method</code> (<code>deterministic</code>, <code>llm</code>, <code>human</code>), <code>confidence</code> (0–1), <code>createdAt</code> (RFC 3339), OPTIONAL <code>model</code>, OPTIONAL <code>notes</code> (strings). MUST NOT contain payload values.</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>A field list (§6.2).</td>
+</tr>
+</tbody></table>
+<h3 id="62-field-list">6.2 Field list<a class="anchor" href="#62-field-list" aria-label="Link to this section">#</a></h3>
+<p>A field list is an array of field objects. Each field object has only these members:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>to</code></td>
+<td>REQUIRED. JSON Pointer into the output, relative to the current output scope. MUST NOT be empty or contain <code>~*</code>. Unique within its list.</td>
+</tr>
+<tr>
+<td><code>from</code></td>
+<td>JSON Pointer into the source, relative to the current source scope. The empty string means the scope itself. MUST NOT contain <code>~*</code>.</td>
+</tr>
+<tr>
+<td><code>const</code></td>
+<td>A JSON value written as-is.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td>A JSON value used when <code>from</code> resolves to absent.</td>
+</tr>
+<tr>
+<td><code>enum</code></td>
+<td>An object mapping the string form of a scalar source value to an output value.</td>
+</tr>
+<tr>
+<td><code>cast</code></td>
+<td>One of <code>string</code>, <code>number</code>, <code>integer</code>, <code>boolean</code>.</td>
+</tr>
+<tr>
+<td><code>scale</code></td>
+<td>A finite number to multiply by.</td>
+</tr>
+<tr>
+<td><code>each</code></td>
+<td>A field list applied to every element of the array at <code>from</code>. Requires <code>from</code>.</td>
+</tr>
+</tbody></table>
+<p>Each field MUST have at least one of <code>from</code>, <code>const</code>, <code>default</code>. Unknown members MUST cause the rule to be rejected.</p>
+<h3 id="63-evaluation">6.3 Evaluation<a class="anchor" href="#63-evaluation" aria-label="Link to this section">#</a></h3>
+<p><code>apply(fields, scope)</code> starts with an empty output object and evaluates each field in order:</p>
+<ol>
+<li>Resolve <code>from</code> against <code>scope</code> as a JSON Pointer. A missing member, an out-of-range index, or a <strong><code>null</code></strong> value yields <em>absent</em>.</li>
+<li>If absent and <code>default</code> is present, use <code>default</code>.</li>
+<li>If <code>const</code> is present, use <code>const</code> (overriding steps 1–2).</li>
+<li>If still absent, write nothing and continue.</li>
+<li>If <code>each</code> is present: the value MUST be an array; the result is the array of <code>apply(each, element)</code> for every element.</li>
+<li>If <code>enum</code> is present and the value is a string, number or boolean whose string form is a member of <code>enum</code>, replace the value with that member&#39;s value.</li>
+<li>If <code>cast</code> is present, convert:<ul>
+<li><code>string</code>: strings unchanged; numbers and booleans to their ECMAScript <code>String()</code> form; otherwise error.</li>
+<li><code>number</code>, <code>integer</code>: numbers unchanged; non-blank strings parsed with ECMAScript <code>Number()</code>; non-finite results are errors.</li>
+<li><code>boolean</code>: booleans unchanged; <code>true</code>/<code>1</code>/<code>yes</code> and <code>false</code>/<code>0</code>/<code>no</code> (case-insensitive strings) and numbers <code>1</code>/<code>0</code>; otherwise error.</li>
+</ul>
+</li>
+<li>If <code>scale</code> is present, the value MUST be a number; multiply and round to 15 significant digits.</li>
+<li>If <code>cast</code> is <code>integer</code>, round to the nearest integer, with halves rounded toward +∞ (ECMAScript <code>Math.round</code>).</li>
+<li>Write the value at <code>to</code>, creating intermediate objects.</li>
+</ol>
+<p>An error makes the whole application fail; the payload MUST then be quarantined (§10.5). Error messages MUST NOT include payload values.</p>
+<p>Because <code>null</code> is absent (step 1), an upstream that starts sending <code>null</code> for an optional field does not produce invalid output. Contracts that need explicit <code>null</code>s can use <code>default: null</code>.</p>
+<h2 id="7-rule-resolution">7. Rule resolution<a class="anchor" href="#7-rule-resolution" aria-label="Link to this section">#</a></h2>
+<p>For each payload, after computing its fingerprint <em>F</em> for contract <em>C</em>, an engine MUST select a rule as follows.</p>
+<h3 id="71-exact-lookup">7.1 Exact lookup<a class="anchor" href="#71-exact-lookup" aria-label="Link to this section">#</a></h3>
+<p>If a non-retired rule is bound to (<em>C</em>, <em>F</em>), directly or through an alias, use it. This is the <strong>fast path</strong>. It MUST NOT invoke a synthesizer or any network service.</p>
+<h3 id="72-absorption">7.2 Absorption<a class="anchor" href="#72-absorption" aria-label="Link to this section">#</a></h3>
+<p>Otherwise, for each active rule <em>R</em> of <em>C</em>, newest first, let <em>U</em> be the source paths <em>R</em> reads (each <code>from</code>, with <code>~*</code> appended for <code>each</code> scopes), <em>S</em> the payload shape, and <em>S<sub>R</sub></em> the rule&#39;s stored shape. <em>R</em> absorbs <em>F</em> if all hold:</p>
+<ol>
+<li><strong>No type drift:</strong> for every path in <em>U</em> present in both <em>S</em> and <em>S<sub>R</sub></em>, the non-<code>NULL</code> markers in <em>S</em> are a subset of those in <em>S<sub>R</sub></em>.</li>
+<li><strong>Not a rename:</strong> it is not the case that some path in <em>U</em> is missing from <em>S</em> <strong>and</strong> some scalar-bearing path of <em>S</em> is missing from <em>S<sub>R</sub></em>. (A disappeared path plus a new path is treated as a likely rename and resolved by synthesis.)</li>
+<li><strong>Valid output:</strong> applying <em>R</em> to the payload produces output that validates against <em>C</em>.</li>
+</ol>
+<p>On absorption, the engine MUST bind <em>F</em> to <em>R</em> as an alias and emit <code>org.shiprtcl.drift.absorbed</code> (§11). Absorption handles added fields, omitted optional fields and newly-null fields without new rules.</p>
+<h3 id="73-synthesis">7.3 Synthesis<a class="anchor" href="#73-synthesis" aria-label="Link to this section">#</a></h3>
+<p>Otherwise the engine MUST emit <code>org.shiprtcl.drift.detected</code> and synthesize a new rule (§8). Concurrent payloads with the same (<em>C</em>, <em>F</em>) MUST share one synthesis (&quot;single flight&quot;). The new rule&#39;s initial state is decided by policy (§9.2) and it is bound to (<em>C</em>, <em>F</em>).</p>
+<h3 id="74-decision">7.4 Decision<a class="anchor" href="#74-decision" aria-label="Link to this section">#</a></h3>
+<p>The engine then applies the selected rule and validates the output against the contract:</p>
+<ul>
+<li>validation fails or a mapping error occurs → <strong>quarantine</strong> (§10.5); if the rule was <code>active</code> and selected by §7.1 or §7.2, also emit <code>org.shiprtcl.rule.suspect</code>;</li>
+<li>rule is <code>active</code> → <strong>deliver</strong>;</li>
+<li>rule is <code>proposed</code> or <code>shadow</code> → <strong>hold</strong>: do not deliver, retain for review.</li>
+</ul>
+<p>Engines MUST validate on every request, including the fast path. Engines MUST NOT deliver output that fails validation.</p>
+<h2 id="8-synthesis">8. Synthesis<a class="anchor" href="#8-synthesis" aria-label="Link to this section">#</a></h2>
+<h3 id="81-deterministic-matching">8.1 Deterministic matching<a class="anchor" href="#81-deterministic-matching" aria-label="Link to this section">#</a></h3>
+<p>Engines SHOULD attempt deterministic matching before any model. A deterministic matcher:</p>
+<ul>
+<li>MUST be a pure function of (shape, contract); it MUST NOT read payload values, so its output is valid for every payload with that fingerprint;</li>
+<li>MUST report a confidence in [0, 1] for each mapped target and the list of unresolved targets;</li>
+<li>SHOULD use name normalization (case and delimiter splitting, singularization, synonym groups) and type compatibility.</li>
+</ul>
+<p>RECOMMENDED type compatibility factors (source marker → target type, implied <code>cast</code>):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>string</code></th>
+<th><code>number</code></th>
+<th><code>integer</code></th>
+<th><code>boolean</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>STR</code></td>
+<td>1.0</td>
+<td>0.75 (<code>number</code>)</td>
+<td>0.7 (<code>integer</code>)</td>
+<td>0.7 (<code>boolean</code>)</td>
+</tr>
+<tr>
+<td><code>NUM</code></td>
+<td>0.9 (<code>string</code>)</td>
+<td>1.0</td>
+<td>0.95 (<code>integer</code>)</td>
+<td>0.7 (<code>boolean</code>)</td>
+</tr>
+<tr>
+<td><code>BOOL</code></td>
+<td>0.9 (<code>string</code>)</td>
+<td>—</td>
+<td>—</td>
+<td>1.0</td>
+</tr>
+</tbody></table>
+<p>Matchers MUST NOT infer <code>scale</code>, <code>enum</code> or <code>const</code>; those carry meaning that structure alone cannot reveal.</p>
+<h3 id="82-synthesizer-input-privacy-boundary">8.2 Synthesizer input (privacy boundary)<a class="anchor" href="#82-synthesizer-input-privacy-boundary" aria-label="Link to this section">#</a></h3>
+<p>A synthesizer that is not part of the engine&#39;s trust boundary (for example a hosted LLM) MUST receive only:</p>
+<ul>
+<li>the <strong>redacted skeleton</strong>: the shape paths and markers of the payload, with any path segment that matches a §4.4 dynamic-key pattern, contains 7 or more consecutive digits, or exceeds 64 characters replaced by <code>~redacted</code>;</li>
+<li>the contract schema;</li>
+<li>the fields already resolved and the targets still unresolved.</li>
+</ul>
+<p>It MUST NOT receive payload values, headers, query strings, or any part of the raw body. Engines SHOULD log how many segments were redacted.</p>
+<h3 id="83-verification-of-synthesizer-output">8.3 Verification of synthesizer output<a class="anchor" href="#83-verification-of-synthesizer-output" aria-label="Link to this section">#</a></h3>
+<p>Synthesizer output is untrusted. Before it can become part of a rule, the engine MUST verify that:</p>
+<ol>
+<li>it parses as an SML field list (§6.2);</li>
+<li>it uses only <code>to</code>, <code>from</code>, <code>cast</code> and <code>each</code> — <code>const</code>, <code>default</code>, <code>enum</code> and <code>scale</code> are reserved for human authors, so a model can never introduce values;</li>
+<li>every source path it reads exists in the skeleton and is not redacted;</li>
+<li>every target path it writes exists in the contract.</li>
+</ol>
+<p>Output that fails verification MUST be discarded in full, and the reason recorded in provenance notes. Key names are attacker-controlled text and therefore a prompt-injection vector; this verification is what bounds the damage to a wrong-but-valid mapping, which §9 addresses.</p>
+<h2 id="9-rule-lifecycle">9. Rule lifecycle<a class="anchor" href="#9-rule-lifecycle" aria-label="Link to this section">#</a></h2>
+<h3 id="91-states">9.1 States<a class="anchor" href="#91-states" aria-label="Link to this section">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Delivered?</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>proposed</code></td>
+<td>no</td>
+<td>Synthesized but failed validation on its triggering payload, or awaiting authoring.</td>
+</tr>
+<tr>
+<td><code>shadow</code></td>
+<td>no</td>
+<td>Valid, but below the auto-activation policy. Output is computed and held for review.</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>yes</td>
+<td>In use.</td>
+</tr>
+<tr>
+<td><code>retired</code></td>
+<td>no</td>
+<td>Withdrawn. Bindings to it are removed; the next matching payload re-enters resolution.</td>
+</tr>
+</tbody></table>
+<p>Any transition is permitted. Each transition MUST emit an event naming the actor.</p>
+<h3 id="92-activation-policy">9.2 Activation policy<a class="anchor" href="#92-activation-policy" aria-label="Link to this section">#</a></h3>
+<p>Engines MUST make activation a configurable policy. RECOMMENDED defaults:</p>
+<ul>
+<li>rules produced only by deterministic matching activate when their minimum confidence is ≥ 0.8 and they validate;</li>
+<li>rules that include synthesizer (model) output start in <code>shadow</code> and require explicit activation.</li>
+</ul>
+<h3 id="93-provenance-and-rollback">9.3 Provenance and rollback<a class="anchor" href="#93-provenance-and-rollback" aria-label="Link to this section">#</a></h3>
+<p>Rules MUST be stored durably with their provenance; an in-memory cache MAY front the store but MUST NOT be the only copy. Engines MUST support retiring a rule and SHOULD keep retired rules for audit.</p>
+<h2 id="10-runtime-requirements">10. Runtime requirements<a class="anchor" href="#10-runtime-requirements" aria-label="Link to this section">#</a></h2>
+<h3 id="101-acknowledgement">10.1 Acknowledgement<a class="anchor" href="#101-acknowledgement" aria-label="Link to this section">#</a></h3>
+<p>A proxy SHOULD acknowledge an upstream request with <code>202 Accepted</code> once the body is received, its signature verified (§10.3) and its media type parsed, and SHOULD perform resolution, delivery and quarantine asynchronously. A proxy MUST respond <code>401</code> to failed signature verification, <code>413</code> to oversized bodies, <code>415</code> to unsupported media types and <code>400</code> to unparseable bodies. Synchronous synthesis inside the upstream&#39;s request is NOT RECOMMENDED: upstream timeouts are short and concurrent drift would multiply model calls.</p>
+<h3 id="102-delivery">10.2 Delivery<a class="anchor" href="#102-delivery" aria-label="Link to this section">#</a></h3>
+<p>Deliveries MUST be retried on network errors, <code>429</code> and <code>5xx</code>, with backoff. They SHOULD NOT be retried on other <code>4xx</code>. Exhausted deliveries MUST be quarantined.</p>
+<h3 id="103-signatures">10.3 Signatures<a class="anchor" href="#103-signatures" aria-label="Link to this section">#</a></h3>
+<p>Translation breaks the upstream&#39;s signature over the body. Therefore:</p>
+<ul>
+<li>a proxy that has the upstream signing secret MUST verify the upstream signature over the <strong>raw</strong> body before parsing;</li>
+<li>a proxy SHOULD sign every delivery using [Standard Webhooks] (<code>webhook-id</code>, <code>webhook-timestamp</code>, <code>webhook-signature: v1,&lt;base64 HMAC-SHA256 of id.timestamp.body&gt;</code>);</li>
+<li>a proxy SHOULD add <code>shiprtcl-fingerprint</code> and <code>shiprtcl-rule</code> headers to deliveries.</li>
+</ul>
+<h3 id="104-idempotency">10.4 Idempotency<a class="anchor" href="#104-idempotency" aria-label="Link to this section">#</a></h3>
+<p>A proxy MUST assign each accepted payload a stable message id and SHOULD drop duplicates within a window of at least 24 hours. The reference implementation derives the id from SHA-256 of the contract id and body.</p>
+<h3 id="105-quarantine">10.5 Quarantine<a class="anchor" href="#105-quarantine" aria-label="Link to this section">#</a></h3>
+<p>Quarantined payloads contain real data and MUST be stored with access control, SHOULD be encrypted at rest (for example AES-256-GCM) and MUST be replayable once a rule is activated.</p>
+<h3 id="106-bounding-drift">10.6 Bounding drift<a class="anchor" href="#106-bounding-drift" aria-label="Link to this section">#</a></h3>
+<p>A proxy SHOULD rate-limit synthesis per contract and alert when the number of distinct fingerprints per contract grows abnormally, since an attacker can mint new shapes at will.</p>
+<h2 id="11-events">11. Events<a class="anchor" href="#11-events" aria-label="Link to this section">#</a></h2>
+<p>Engines MUST emit audit events as CloudEvents 1.0 [CLOUDEVENTS] in structured JSON mode, with <code>subject</code> set to the contract id. Event <code>data</code> MUST NOT contain payload values.</p>
+<table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th><code>data</code> members</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>org.shiprtcl.drift.detected</code></td>
+<td><code>fingerprint</code>, <code>previous</code> (fingerprint of the newest active rule or <code>null</code>), <code>diff</code> (<code>added</code>, <code>removed</code>, <code>retyped</code>)</td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.drift.absorbed</code></td>
+<td><code>fingerprint</code>, <code>rule</code>, <code>added</code>, <code>missing</code></td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.rule.created</code></td>
+<td><code>rule</code>, <code>fingerprint</code>, <code>state</code>, <code>method</code>, <code>model</code>, <code>confidence</code>, <code>notes</code></td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.rule.activated</code> / <code>.shadow</code> / <code>.proposed</code> / <code>.retired</code></td>
+<td><code>rule</code>, <code>from</code>, <code>to</code>, <code>actor</code></td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.rule.suspect</code></td>
+<td><code>rule</code>, <code>fingerprint</code>, <code>errors</code></td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.payload.translated</code></td>
+<td><code>fingerprint</code>, <code>rule</code>, <code>resolution</code> (<code>hit</code>, <code>absorbed</code>, <code>synthesized</code>)</td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.payload.held</code></td>
+<td><code>fingerprint</code>, <code>rule</code>, <code>state</code></td>
+</tr>
+<tr>
+<td><code>org.shiprtcl.payload.quarantined</code></td>
+<td><code>fingerprint</code>, <code>rule</code>, <code>errors</code> (<code>path</code>, <code>message</code>)</td>
+</tr>
+</tbody></table>
+<p><code>payload.translated</code> MAY be sampled or omitted at high volume.</p>
+<h2 id="12-conformance">12. Conformance<a class="anchor" href="#12-conformance" aria-label="Link to this section">#</a></h2>
+<p>An implementation MAY claim conformance at one or more levels:</p>
+<ul>
+<li><strong>SHIPRTCL Fingerprint</strong> — §3 (for the formats it supports) and §4. It MUST reproduce every vector in <code>conformance/fingerprint-vectors.json</code> exactly.</li>
+<li><strong>SHIPRTCL Mapping</strong> — Fingerprint, plus §5 and §6.</li>
+<li><strong>SHIPRTCL Engine</strong> — Mapping, plus §7–§9 and §11.</li>
+<li><strong>SHIPRTCL Proxy</strong> — Engine, plus §10.</li>
+</ul>
+<h2 id="13-security-considerations">13. Security considerations<a class="anchor" href="#13-security-considerations" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Upstreams are adversarial.</strong> They control values and key names. Key names enter synthesizer prompts (§8.2) and are a prompt-injection channel; §8.3 limits any model&#39;s output to existing paths and non-value-producing operations.</li>
+<li><strong>Valid is not correct.</strong> A verified rule can still map the wrong field to a field of the same type (for example two string fields). The lifecycle (§9), confidence reporting and shadow mode exist for this reason. Engines SHOULD require review for rules touching money, identity or authorization fields.</li>
+<li><strong>Semantic drift is invisible to structure.</strong> A change in units (cents to dollars), enum vocabulary or meaning, with no change of type, produces the same fingerprint. Contracts SHOULD use <code>enum</code>, <code>minimum</code> and <code>maximum</code> to turn such drift into validation failures.</li>
+<li><strong>Shape flooding.</strong> Distinct shapes are cheap to produce; see §10.6.</li>
+<li><strong>The proxy is a trust intermediary.</strong> It sees plaintext payloads and holds signing secrets; it SHOULD be operated by, or under the control of, the downstream party.</li>
+<li><strong>Denial of service</strong> through deep nesting or huge bodies MUST be bounded by body-size and depth limits.</li>
+</ul>
+<h2 id="14-privacy-considerations">14. Privacy considerations<a class="anchor" href="#14-privacy-considerations" aria-label="Link to this section">#</a></h2>
+<p>Fingerprints and shapes contain only key names and type markers, but key names can themselves be personal data; §4.4 collapses the common cases into <code>MAP</code>, and §8.2 redacts further. Quarantine stores real data (§10.5). Events never contain values (§11).</p>
+<h2 id="15-versioning">15. Versioning<a class="anchor" href="#15-versioning" aria-label="Link to this section">#</a></h2>
+<p>This document is version 0.1. The <code>shiprtcl</code> member of rule documents and the <code>sr1</code> fingerprint prefix identify the versions in use. Changes to §4 that alter canonical forms MUST change the fingerprint prefix.</p>
+<h2 id="16-references">16. References<a class="anchor" href="#16-references" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>[RFC 2119] Bradner, S., &quot;Key words for use in RFCs to Indicate Requirement Levels&quot;, BCP 14, RFC 2119, 1997.</li>
+<li>[RFC 8174] Leiba, B., &quot;Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words&quot;, BCP 14, RFC 8174, 2017.</li>
+<li>[RFC 8259] Bray, T., &quot;The JavaScript Object Notation (JSON) Data Interchange Format&quot;, RFC 8259, 2017.</li>
+<li>[RFC 6901] Bryan, P., Zyp, K., Nottingham, M., &quot;JavaScript Object Notation (JSON) Pointer&quot;, RFC 6901, 2013.</li>
+<li>[RFC 8785] Rundgren, A., Jordan, B., Erdtman, S., &quot;JSON Canonicalization Scheme (JCS)&quot;, RFC 8785, 2020.</li>
+<li>[RFC 4180] Shafranovich, Y., &quot;Common Format and MIME Type for Comma-Separated Values (CSV) Files&quot;, RFC 4180, 2005.</li>
+<li>[UAX15] Unicode Standard Annex #15, &quot;Unicode Normalization Forms&quot;.</li>
+<li>[FIPS 180-4] NIST, &quot;Secure Hash Standard (SHS)&quot;, 2015.</li>
+<li>[JSON-SCHEMA-2020-12] JSON Schema: A Media Type for Describing JSON Documents, draft 2020-12.</li>
+<li>[CLOUDEVENTS] CNCF, &quot;CloudEvents — Version 1.0&quot;.</li>
+<li>[Standard Webhooks] Standard Webhooks specification, <a href="https://www.standardwebhooks.com">https://www.standardwebhooks.com</a>.</li>
+</ul>
+<h2 id="appendix-a-worked-example">Appendix A. Worked example<a class="anchor" href="#appendix-a-worked-example" aria-label="Link to this section">#</a></h2>
+<p>Contract <code>payments.v1</code>:</p>
+<pre><code class="language-json">{ &quot;type&quot;: &quot;object&quot;, &quot;required&quot;: [&quot;event&quot;, &quot;customer&quot;, &quot;amount&quot;], &quot;additionalProperties&quot;: false,
+  &quot;properties&quot;: {
+    &quot;event&quot;: { &quot;type&quot;: &quot;string&quot; }, &quot;amount&quot;: { &quot;type&quot;: &quot;number&quot; },
+    &quot;customer&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;required&quot;: [&quot;email&quot;, &quot;id&quot;],
+                  &quot;properties&quot;: { &quot;email&quot;: { &quot;type&quot;: &quot;string&quot; }, &quot;id&quot;: { &quot;type&quot;: &quot;string&quot; } } },
+    &quot;items&quot;: { &quot;type&quot;: &quot;array&quot;, &quot;items&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;required&quot;: [&quot;sku&quot;],
+               &quot;properties&quot;: { &quot;sku&quot;: { &quot;type&quot;: &quot;string&quot; }, &quot;quantity&quot;: { &quot;type&quot;: &quot;integer&quot; } } } } } }
+</code></pre>
+<p>The upstream renames fields in a new API version:</p>
+<pre><code class="language-json">{ &quot;event_type&quot;: &quot;payment_success&quot;, &quot;buyer&quot;: { &quot;email_addr&quot;: &quot;a@b.co&quot;, &quot;id&quot;: 9812 },
+  &quot;subtotal&quot;: 49.5, &quot;line_items&quot;: [ { &quot;sku&quot;: &quot;s1&quot;, &quot;qty&quot;: 2 } ] }
+</code></pre>
+<p>The fingerprint is new and no active rule absorbs it (paths <code>/event</code>, <code>/customer/…</code>, <code>/amount</code> are missing while new scalar paths appear), so the engine synthesizes. The reference deterministic matcher produces, without a model:</p>
+<pre><code class="language-json">[ { &quot;to&quot;: &quot;/amount&quot;, &quot;from&quot;: &quot;/subtotal&quot; },
+  { &quot;to&quot;: &quot;/customer/email&quot;, &quot;from&quot;: &quot;/buyer/email_addr&quot; },
+  { &quot;to&quot;: &quot;/customer/id&quot;, &quot;from&quot;: &quot;/buyer/id&quot;, &quot;cast&quot;: &quot;string&quot; },
+  { &quot;to&quot;: &quot;/event&quot;, &quot;from&quot;: &quot;/event_type&quot; },
+  { &quot;to&quot;: &quot;/items&quot;, &quot;from&quot;: &quot;/line_items&quot;, &quot;each&quot;: [ { &quot;to&quot;: &quot;/quantity&quot;, &quot;from&quot;: &quot;/qty&quot;, &quot;cast&quot;: &quot;integer&quot; },
+                                                     { &quot;to&quot;: &quot;/sku&quot;, &quot;from&quot;: &quot;/sku&quot; } ] } ]
+</code></pre>
+<p>with minimum confidence above 0.8, so under the default policy it activates, validates, and delivers:</p>
+<pre><code class="language-json">{ &quot;amount&quot;: 49.5, &quot;customer&quot;: { &quot;email&quot;: &quot;a@b.co&quot;, &quot;id&quot;: &quot;9812&quot; }, &quot;event&quot;: &quot;payment_success&quot;,
+  &quot;items&quot;: [ { &quot;quantity&quot;: 2, &quot;sku&quot;: &quot;s1&quot; } ] }
+</code></pre>
+<p>Every later payload with this structure takes the fast path.</p>
+</article>
+</div><script>(()=>{const l=[...document.querySelectorAll('.toc a')];const m=new Map(l.map(a=>[a.getAttribute('href').slice(1),a]));const o=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){l.forEach(a=>a.classList.remove('on'));m.get(e.target.id)?.classList.add('on')}},{rootMargin:'-80px 0px -70% 0px'});document.querySelectorAll('.prose h2[id],.prose h3[id]').forEach(h=>o.observe(h))})();</script></main>
+<footer class="foot"><div class="wrap">
+  <div>SHIPRTCL v0.1 draft · created by Srishesh Archik · spec CC-BY-4.0 · code Apache-2.0</div>
+  <nav aria-label="Footer">
+    <a href="https://github.com/shiprtcl/shiprtcl">GitHub</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/blob/main/CONTRIBUTING.md">Contribute</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/blob/main/GOVERNANCE.md">Governance</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/security/policy">Security</a>
+    <a href="/conformance/fingerprint-vectors.json">Vectors</a>
+  </nav>
+</div></footer>
+
+</body>
+</html>

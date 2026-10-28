@@ -1,0 +1,6 @@
+Contact: mailto:security@shiprtcl.org
+Contact: https://github.com/shiprtcl/shiprtcl/security/advisories/new
+Expires: 2027-10-29T00:00:00Z
+Preferred-Languages: en
+Canonical: https://shiprtcl.org/.well-known/security.txt
+Policy: https://github.com/shiprtcl/shiprtcl/security/policy

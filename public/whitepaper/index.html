@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL</title>
+<meta name="description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<link rel="canonical" href="https://shiprtcl.org/whitepaper/">
+
+<meta name="author" content="Srishesh Archik">
+<meta name="theme-color" content="#f5f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SHIPRTCL">
+<meta property="og:title" content="Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL">
+<meta property="og:description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<meta property="og:url" content="https://shiprtcl.org/whitepaper/">
+<meta property="og:image" content="https://shiprtcl.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SHIPRTCL — Upstream APIs drift. Your ingestion heals.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules — SHIPRTCL">
+<meta name="twitter:description" content="The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.">
+<meta name="twitter:image" content="https://shiprtcl.org/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css?v=b31a971a27">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","name":"SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules","description":"The SHIPRTCL whitepaper: why webhook and API drift keeps breaking production, and how structural fingerprints, a verifiable mapping language and a privacy-bounded synthesis step repair it.","author":{"@type":"Person","name":"Srishesh Archik"},"datePublished":"2026-10-29","dateModified":"2026-10-29","version":"0.1","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","url":"https://shiprtcl.org/whitepaper/","publisher":{"@type":"Organization","name":"SHIPRTCL","url":"https://shiprtcl.org"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="SHIPRTCL home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor"/><g fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M6.5 8h11M6.5 16h11M6.5 12h4" stroke="var(--bg)"/><path d="M14 12h3.5" stroke="var(--heal)"/></g></svg><span class="word">SHIPRTCL</span></a>
+  <nav class="nav" aria-label="Primary">
+    <a href="/whitepaper/" aria-current="page">Whitepaper</a>
+    <a href="/spec/">Spec</a>
+    <a href="/playground/">Playground</a>
+    <a class="gh" href="https://github.com/shiprtcl/shiprtcl"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="hide-sm">GitHub</span></a>
+  </nav>
+</div></header>
+<main id="main">
+<div class="doc-head"><div class="wrap">
+  <span class="eyebrow">Whitepaper</span>
+  <h1 style="margin-top:14px">Self-healing ingestion with structural fingerprints and lazily synthesized mapping rules</h1>
+  <div class="meta">
+    <span>v0.1 · Draft</span><span>2026-10-29</span><span>Srishesh Archik</span><span>CC-BY-4.0</span>
+    <a href="/whitepaper/shiprtcl-whitepaper.md">Markdown source</a><a href="https://github.com/shiprtcl/shiprtcl/blob/main/whitepaper/shiprtcl-whitepaper.md">Edit on GitHub</a><a href="javascript:print()">Print / PDF</a>
+  </div>
+</div></div>
+<div class="wrap doc">
+  <nav class="toc" aria-label="Contents"><span class="eyebrow">Contents</span><ol><li><a href="#abstract">Abstract</a></li><li><a href="#1-introduction">1. Introduction</a><ol><li><a href="#11-the-problem-structure-is-an-unwritten-contract">1.1 The problem: structure is an unwritten contract</a></li><li><a href="#12-why-existing-approaches-fall-short">1.2 Why existing approaches fall short</a></li><li><a href="#13-our-approach">1.3 Our approach</a></li><li><a href="#14-contributions">1.4 Contributions</a></li></ol></li><li><a href="#2-design-goals-and-non-goals">2. Design goals and non-goals</a></li><li><a href="#3-system-model">3. System model</a></li><li><a href="#4-structural-fingerprints">4. Structural fingerprints</a><ol><li><a href="#41-normalization">4.1 Normalization</a></li><li><a href="#42-shape">4.2 Shape</a></li><li><a href="#43-maps">4.3 Maps</a></li><li><a href="#44-canonical-form-and-hash">4.4 Canonical form and hash</a></li><li><a href="#45-prior-art">4.5 Prior art</a></li></ol></li><li><a href="#5-the-shiprtcl-mapping-language">5. The SHIPRTCL Mapping Language</a></li><li><a href="#6-resolution-hit-absorb-synthesize">6. Resolution: hit, absorb, synthesize</a></li><li><a href="#7-synthesis">7. Synthesis</a><ol><li><a href="#71-deterministic-first">7.1 Deterministic first</a></li><li><a href="#72-the-model-behind-a-privacy-boundary">7.2 The model, behind a privacy boundary</a></li><li><a href="#73-verifying-an-untrusted-proposer">7.3 Verifying an untrusted proposer</a></li></ol></li><li><a href="#8-lifecycle-provenance-and-audit">8. Lifecycle, provenance and audit</a></li><li><a href="#9-runtime">9. Runtime</a><ol><li><a href="#91-proxy-behaviour">9.1 Proxy behaviour</a></li><li><a href="#92-performance">9.2 Performance</a></li></ol></li><li><a href="#10-known-limitations">10. Known limitations</a></li><li><a href="#11-roadmap">11. Roadmap</a></li><li><a href="#12-conclusion">12. Conclusion</a></li><li><a href="#references">References</a></li></ol></nav>
+  <article class="prose"><h1>SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules</h1>
+<p><strong>Whitepaper · Version 0.1 (Draft) · 29 October 2026</strong>
+<strong>Srishesh Archik</strong> · shiprtcl.org</p>
+<h2 id="abstract">Abstract<a class="anchor" href="#abstract" aria-label="Link to this section">#</a></h2>
+<p>Every system that consumes third-party data — webhooks, partner APIs, file drops — encodes assumptions about the structure of that data. When the producer renames a field, nests an object, changes a type or switches API versions, those assumptions fail, usually in production and usually silently. The common responses are hand-written adapters, which have to be maintained forever, and alerting, which tells you about the outage after it has started.</p>
+<p>We present <strong>SHIPRTCL</strong>, the Self-Healing Ingestion Protocol: an open specification for detecting structural drift and repairing it at the point of ingestion. SHIPRTCL reduces every payload to a value-independent <strong>structural fingerprint</strong>. It binds each fingerprint to a <strong>mapping rule</strong> written in a small, total, declarative language, and resolves unseen fingerprints by <strong>absorbing</strong> them into existing rules where that is provably safe, or by <strong>synthesizing</strong> a new rule once. Synthesis is deterministic first. A language model is an optional fallback that sees only a redacted skeleton of key paths and types — never values — and can only propose copy, rename and cast operations, which are checked against both structures before use. Every rule carries provenance, moves through a reviewable lifecycle, and every output is validated against the consumer&#39;s contract before release; anything else is quarantined.</p>
+<p>The steady-state cost is a hash and a lookup. Our TypeScript reference implementation translates and validates a typical 1.4 KB webhook in <strong>0.19 ms at the median and 0.58 ms at p99</strong> on a single core, without native code. The specification, reference implementation, conformance vectors and an in-browser playground are released under CC-BY-4.0 and Apache-2.0.</p>
+<h2 id="1-introduction">1. Introduction<a class="anchor" href="#1-introduction" aria-label="Link to this section">#</a></h2>
+<h3 id="11-the-problem-structure-is-an-unwritten-contract">1.1 The problem: structure is an unwritten contract<a class="anchor" href="#11-the-problem-structure-is-an-unwritten-contract" aria-label="Link to this section">#</a></h3>
+<p>A webhook consumer is a parser for a format someone else controls. The producer&#39;s documentation describes the format, but the consumer&#39;s code depends on the format as it actually arrives — every key name, every nesting level, every type. Hyrum&#39;s Law applies with full force: whatever the producer emits, someone depends on.</p>
+<p>Producers do try. Stripe pins every account to an API version and transforms responses backwards through a chain of version-change modules [Leach 2017], which is possibly the most rigorous approach in the industry. Most producers are not Stripe. In practice consumers see:</p>
+<ul>
+<li><strong>renames</strong> — <code>email</code> becomes <code>email_address</code>, <code>type</code> becomes <code>event_type</code>;</li>
+<li><strong>restructuring</strong> — flat fields move into a nested object, or the reverse;</li>
+<li><strong>type changes</strong> — numeric ids become strings, amounts move from floats to integer minor units;</li>
+<li><strong>optionality changes</strong> — a field that was always present starts arriving as <code>null</code> or not at all;</li>
+<li><strong>format changes</strong> — the partner who sent JSON now sends CSV, or SOAP;</li>
+<li><strong>additions</strong> — harmless on their own, but they break consumers that validate strictly.</li>
+</ul>
+<p>Each of these is a small engineering task. Collectively, across dozens of integrations, they are a permanent tax, and each occurrence is an incident: a payment not recorded, an order not shipped, a lead not created.</p>
+<h3 id="12-why-existing-approaches-fall-short">1.2 Why existing approaches fall short<a class="anchor" href="#12-why-existing-approaches-fall-short" aria-label="Link to this section">#</a></h3>
+<p><strong>Hand-written adapters</strong> work but don&#39;t scale. Each one is code, tests and an on-call burden.</p>
+<p><strong>Liberal parsing</strong> — Postel&#39;s &quot;be liberal in what you accept&quot; — makes things worse. Silent tolerance hides drift until it causes damage, and it lets accidental behaviours harden into de-facto protocol. RFC 9413 [Thomson &amp; Schinazi 2023] argues this at length. SHIPRTCL takes the opposite position: tolerance must be <strong>explicit, recorded and reviewable</strong>.</p>
+<p><strong>Webhook gateways</strong> (Svix, Hookdeck, Convoy) solve delivery: retries, fan-out, signatures, replay. They largely treat payloads as opaque, or let users write transformation code by hand. That code is the adapter problem again.</p>
+<p><strong>Schema registries</strong> (Confluent Schema Registry, Avro) govern evolution when <em>both</em> sides cooperate through a shared registry. Third-party webhooks have no shared registry; the producer will not register its schema with you.</p>
+<p><strong>Integration platforms</strong> (Airbyte, Apache Camel, iPaaS products) provide connector catalogues maintained by a vendor or community. They are excellent when a connector exists and is current, and they are adapters again when it is not.</p>
+<p><strong>LLM-in-the-loop transformation</strong> — asking a model to rewrite each payload — is too slow, too expensive and too nondeterministic for the hot path, and it sends customer data to a third party on every request.</p>
+<h3 id="13-our-approach">1.3 Our approach<a class="anchor" href="#13-our-approach" aria-label="Link to this section">#</a></h3>
+<p>SHIPRTCL&#39;s central observation is that <strong>drift is rare, while traffic is constant</strong>. A webhook endpoint may receive millions of payloads in a handful of distinct structures. If we can recognize a structure cheaply and exactly, then the expensive work — deciding how a structure maps to the consumer&#39;s contract — happens once per structure, not once per payload, and its result can be inspected, versioned and reused like any other configuration.</p>
+<p>This splits the problem in two:</p>
+<ol>
+<li><strong>Recognition</strong> (every request): compute a value-independent structural fingerprint and look it up. This is pure computation over the payload with no network calls, and it costs microseconds.</li>
+<li><strong>Resolution</strong> (once per new structure): decide how the new structure maps to the contract — by proving an existing rule still applies, by deterministic name and type matching, by an optional model, or by a human — and record the decision as a declarative rule with provenance.</li>
+</ol>
+<p>Because a rule is data in a deliberately weak language, it can be proposed by an untrusted model, verified mechanically, reviewed by a human, diffed, rolled back, and shared.</p>
+<h3 id="14-contributions">1.4 Contributions<a class="anchor" href="#14-contributions" aria-label="Link to this section">#</a></h3>
+<ol>
+<li>A <strong>structural fingerprint</strong> over a normalized tree, with precise rules for arrays, maps, Unicode, escaping and ordering, and published conformance vectors (§4).</li>
+<li><strong>Absorption</strong>, a criterion for safely reusing a rule across fingerprints that differ only by added, omitted or null fields, while sending likely renames to synthesis (§6).</li>
+<li><strong>SML</strong>, a total mapping language whose operations cannot introduce values, which makes model output safe to <em>verify</em> even if it isn&#39;t trustworthy (§5).</li>
+<li>A <strong>privacy boundary</strong> for synthesis — a redacted skeleton — plus a verification procedure that confines prompt injection to wrong-but-valid mappings (§7).</li>
+<li>A <strong>rule lifecycle</strong> and <strong>CloudEvents audit vocabulary</strong> that make self-healing observable and reversible (§8).</li>
+<li>An open-source <strong>reference implementation</strong> with a proxy that verifies upstream signatures, re-signs with Standard Webhooks, and encrypts its quarantine (§9).</li>
+</ol>
+<h2 id="2-design-goals-and-non-goals">2. Design goals and non-goals<a class="anchor" href="#2-design-goals-and-non-goals" aria-label="Link to this section">#</a></h2>
+<p><strong>Goals.</strong></p>
+<ul>
+<li><em>Fail closed.</em> Never deliver output that does not satisfy the consumer&#39;s contract.</li>
+<li><em>Values never leave.</em> No component outside the consumer&#39;s trust boundary sees payload values in order to repair structure.</li>
+<li><em>Deterministic steady state.</em> The same payload structure always takes the same path through the same rule.</li>
+<li><em>Explainable.</em> Every translation can be traced to a rule, and every rule to who or what created it and why.</li>
+<li><em>Zero code at integration.</em> A consumer adopts SHIPRTCL by publishing a contract and pointing an upstream at an engine.</li>
+<li><em>Implementable.</em> Any competent team can build a conforming engine in any language from the specification and the vectors.</li>
+</ul>
+<p><strong>Non-goals.</strong></p>
+<ul>
+<li><em>Semantic understanding.</em> SHIPRTCL repairs structure. It does not know that <code>amount</code> changed from dollars to cents (§10).</li>
+<li><em>Arbitrary transformation.</em> SML is not a programming language. Computed fields, joins and lookups belong downstream.</li>
+<li><em>Delivery infrastructure.</em> SHIPRTCL specifies the minimum delivery behaviour a proxy needs to be correct. It doesn&#39;t compete with webhook gateways and can sit in front of or behind one.</li>
+</ul>
+<h2 id="3-system-model">3. System model<a class="anchor" href="#3-system-model" aria-label="Link to this section">#</a></h2>
+<pre><code> upstream ──► [ ingest → fingerprint → resolve → apply → validate ] ──► downstream
+ (untrusted)           SHIPRTCL engine (consumer&#39;s trust boundary)       (contract owner)
+                                    │                 │
+                          synthesizer (optional,   quarantine
+                          sees skeleton only)      (encrypted)
+</code></pre>
+<p>The <strong>upstream</strong> is untrusted. It controls values and key names, and it may be compromised or malicious. The <strong>engine</strong> runs inside the consumer&#39;s trust boundary: the consumer operates it, or a provider operates it on their behalf. The <strong>contract</strong> is the consumer&#39;s declaration of what it accepts. The <strong>synthesizer</strong> is outside the trust boundary by default and receives only what §7.2 allows.</p>
+<h2 id="4-structural-fingerprints">4. Structural fingerprints<a class="anchor" href="#4-structural-fingerprints" aria-label="Link to this section">#</a></h2>
+<h3 id="41-normalization">4.1 Normalization<a class="anchor" href="#41-normalization" aria-label="Link to this section">#</a></h3>
+<p>Payloads first become an <strong>IAST</strong>, a plain JSON tree. JSON is parsed. Form bodies become objects of strings. CSV becomes an array of objects of strings. XML elements become objects whose child elements are <em>always</em> arrays, so that one occurrence and two occurrences have the same structure. One rule is applied without exception: <strong>types are never inferred from text</strong>. A ZIP code <code>01234</code> stays a string. If it were inferred as a number on some rows and a string on others, the fingerprint would depend on values, and recognition would become flaky. Conversion is the job of an explicit, audited <code>cast</code>.</p>
+<h3 id="42-shape">4.2 Shape<a class="anchor" href="#42-shape" aria-label="Link to this section">#</a></h3>
+<p>The <strong>shape</strong> of a tree is the set of (path, types) pairs reached by walking it, with values discarded. Paths are JSON Pointers [RFC 6901] extended with one segment, <code>~*</code>, meaning &quot;every element&quot;. <code>~*</code> is not a legal RFC 6901 escape, so it cannot collide with a real key. Arrays contribute their element shapes as a <strong>union</strong>. A key that appears in only some line items still appears once, and array length has no effect. Seven type markers are used: <code>ARR</code>, <code>BOOL</code>, <code>MAP</code>, <code>NULL</code>, <code>NUM</code>, <code>OBJ</code>, <code>STR</code>. Integers and non-integers are deliberately both <code>NUM</code>, because many producers emit <code>50</code> and <code>50.0</code> for the same field.</p>
+<h3 id="43-maps">4.3 Maps<a class="anchor" href="#43-maps" aria-label="Link to this section">#</a></h3>
+<p>The naive fingerprint has a fatal flaw. Many payloads contain objects whose <em>keys are data</em>: metadata dictionaries, maps keyed by id, per-email or per-date buckets. Every distinct key set yields a new fingerprint — so nearly every request would be a cache miss — and the keys themselves can be personal data. SHIPRTCL classifies an object as a <code>MAP</code> when the contract hints that it is one, when it has more than 256 keys, or when <em>every</em> key matches a dynamic-key pattern: digits, UUIDs, emails, ISO dates, long hex strings, or prefixed opaque ids such as <code>price_1NxYz2AbCdEf</code>. A map&#39;s values are walked under <code>~*</code>, like array elements. Its keys vanish from the shape, along with any data they carried.</p>
+<h3 id="44-canonical-form-and-hash">4.4 Canonical form and hash<a class="anchor" href="#44-canonical-form-and-hash" aria-label="Link to this section">#</a></h3>
+<p>The shape is sorted by path in Unicode <strong>code-point</strong> order. We specify code-point order explicitly because JavaScript&#39;s default string sort uses UTF-16 code units, and that disagrees with UTF-8 byte order for characters outside the Basic Multilingual Plane; our vectors include such a case. The sorted shape is serialized with the JSON Canonicalization Scheme [RFC 8785] and hashed with SHA-256. Keys are normalized to Unicode NFC first, so a composed <code>é</code> and a decomposed <code>e + ◌́</code> produce the same fingerprint.</p>
+<p>For the payload</p>
+<pre><code class="language-json">{&quot;event&quot;:&quot;payment_success&quot;,&quot;customer&quot;:{&quot;email&quot;:&quot;user@example.com&quot;,&quot;id&quot;:9812},&quot;amount&quot;:49.50,&quot;items&quot;:[&quot;sku_1&quot;,&quot;sku_2&quot;]}
+</code></pre>
+<p>the canonical form is</p>
+<pre><code>[[&quot;&quot;,&quot;OBJ&quot;],[&quot;/amount&quot;,&quot;NUM&quot;],[&quot;/customer&quot;,&quot;OBJ&quot;],[&quot;/customer/email&quot;,&quot;STR&quot;],[&quot;/customer/id&quot;,&quot;NUM&quot;],[&quot;/event&quot;,&quot;STR&quot;],[&quot;/items&quot;,&quot;ARR&quot;],[&quot;/items/~*&quot;,&quot;STR&quot;]]
+</code></pre>
+<p>and the fingerprint is</p>
+<pre><code>sr1:sha256:687cb54f1c77c419347a344b75fb970457eca760500bfec3f3d326c88171b0ae
+</code></pre>
+<p>The <code>sr1</code> prefix versions the algorithm, so it can evolve without ambiguity. The conformance suite contains 22 vectors covering these rules. Any implementation, in any language, must reproduce them byte for byte.</p>
+<h3 id="45-prior-art">4.5 Prior art<a class="anchor" href="#45-prior-art" aria-label="Link to this section">#</a></h3>
+<p>Fingerprinting a <em>schema</em> is not new. Avro defines a Parsing Canonical Form for schemas and fingerprints it with CRC-64 or SHA-256 [Avro]. The difference is that SHIPRTCL fingerprints a <em>payload</em>, inferring its shape from the instance alone, because third-party producers do not hand you a schema. That one difference is why map classification, array unions and the never-infer-types rule are needed.</p>
+<h2 id="5-the-shiprtcl-mapping-language">5. The SHIPRTCL Mapping Language<a class="anchor" href="#5-the-shiprtcl-mapping-language" aria-label="Link to this section">#</a></h2>
+<p>A rule is a list of fields. Each field writes one output path:</p>
+<pre><code class="language-json">[ { &quot;to&quot;: &quot;/event&quot;,          &quot;from&quot;: &quot;/event_type&quot; },
+  { &quot;to&quot;: &quot;/customer/id&quot;,    &quot;from&quot;: &quot;/buyer/id&quot;, &quot;cast&quot;: &quot;string&quot; },
+  { &quot;to&quot;: &quot;/amount_minor&quot;,   &quot;from&quot;: &quot;/amount&quot;, &quot;cast&quot;: &quot;integer&quot;, &quot;scale&quot;: 100 },
+  { &quot;to&quot;: &quot;/status&quot;,         &quot;from&quot;: &quot;/state&quot;, &quot;enum&quot;: { &quot;succeeded&quot;: &quot;paid&quot; } },
+  { &quot;to&quot;: &quot;/currency&quot;,       &quot;from&quot;: &quot;/currency&quot;, &quot;default&quot;: &quot;INR&quot; },
+  { &quot;to&quot;: &quot;/items&quot;,          &quot;from&quot;: &quot;/line_items&quot;,
+    &quot;each&quot;: [ { &quot;to&quot;: &quot;/sku&quot;, &quot;from&quot;: &quot;/sku&quot; }, { &quot;to&quot;: &quot;/quantity&quot;, &quot;from&quot;: &quot;/qty&quot;, &quot;cast&quot;: &quot;integer&quot; } ] } ]
+</code></pre>
+<p>There are eight members (<code>to</code>, <code>from</code>, <code>const</code>, <code>default</code>, <code>enum</code>, <code>cast</code>, <code>scale</code>, <code>each</code>) and one evaluation order. There are no variables, conditionals or functions, and every rule terminates in time linear in the payload. A <code>null</code> source counts as absent, so an upstream that starts sending <code>null</code> for an optional field degrades gracefully.</p>
+<p>We chose this weakness on purpose. JSONata, JMESPath and jq are far more expressive, and that expressiveness is exactly what we cannot verify. With SML, every question that matters about a rule — which source paths does it read, which target paths does it write, can it introduce values — can be answered by reading the rule, without running it. §7 depends on that.</p>
+<h2 id="6-resolution-hit-absorb-synthesize">6. Resolution: hit, absorb, synthesize<a class="anchor" href="#6-resolution-hit-absorb-synthesize" aria-label="Link to this section">#</a></h2>
+<p>For each payload, the engine resolves a rule in three steps.</p>
+<p><strong>Hit.</strong> If a non-retired rule is bound to (contract, fingerprint), use it. This is the fast path: no synthesizer and no network.</p>
+<p><strong>Absorb.</strong> Otherwise, test the contract&#39;s active rules, newest first. A rule absorbs the new fingerprint when:</p>
+<ol>
+<li>none of the paths it reads has changed type;</li>
+<li>the change does not look like a rename — that is, it is <em>not</em> the case that a path the rule reads has disappeared <strong>and</strong> a new scalar path has appeared; and</li>
+<li>applying the rule produces valid output.</li>
+</ol>
+<p>Absorbed fingerprints are aliased to the rule. This one mechanism handles the most common harmless drifts: added fields, omitted optional fields, and fields that become <code>null</code>. No new rule is written, but an event records exactly what was added and what was missing.</p>
+<p>Condition 2 matters most. Suppose <code>amount</code> disappears and <code>total_amount</code> appears. Without condition 2, the old rule would be &quot;valid&quot; whenever <code>amount</code> was optional, and the value would be silently dropped. With it, the engine recognizes a likely rename and synthesizes.</p>
+<p><strong>Synthesize.</strong> Otherwise, the engine emits a <code>drift.detected</code> event carrying the structural diff (paths added, removed and retyped against the newest active rule) and synthesizes a rule. Concurrent requests with the same new fingerprint share one synthesis (&quot;single flight&quot;), so a burst of a thousand identical new payloads costs one synthesis, not a thousand.</p>
+<h2 id="7-synthesis">7. Synthesis<a class="anchor" href="#7-synthesis" aria-label="Link to this section">#</a></h2>
+<h3 id="71-deterministic-first">7.1 Deterministic first<a class="anchor" href="#71-deterministic-first" aria-label="Link to this section">#</a></h3>
+<p>Most renames are easy. <code>event_type</code>→<code>event</code>, <code>email_addr</code>→<code>email</code>, <code>qty</code>→<code>quantity</code> and <code>buyer</code>→<code>customer</code> can all be resolved without a model, using case and delimiter splitting, singularization, a small synonym table, context from parent path segments, and type compatibility. The reference matcher scores every (target, source) pair as name similarity × type fit and assigns greedily, one-to-one. The type fit table encodes caution: a <code>NUM</code> feeding a <code>string</code> target is easy (0.9), while a <code>STR</code> feeding an <code>integer</code> target is risky (0.7), because <code>&quot;2&quot;</code> might be <code>&quot;two&quot;</code> tomorrow.</p>
+<p>The matcher is a pure function of (shape, contract). It never reads values, so its output is equally valid for every payload with that fingerprint, which is exactly what makes it safe to cache.</p>
+<p>In the worked example of the specification (Appendix A), six renames (including <code>buyer</code> → <code>customer</code> on a nested object) and one type change are all resolved deterministically, with minimum confidence above the default activation threshold of 0.8. No model is involved.</p>
+<h3 id="72-the-model-behind-a-privacy-boundary">7.2 The model, behind a privacy boundary<a class="anchor" href="#72-the-model-behind-a-privacy-boundary" aria-label="Link to this section">#</a></h3>
+<p>When targets remain unresolved, an engine <em>may</em> call a synthesizer — typically a small language model. The reference implementation speaks to any OpenAI-compatible <code>/chat/completions</code> endpoint, so Cloudflare Workers AI, Ollama, vLLM and hosted providers all work. The synthesizer receives:</p>
+<ul>
+<li>the <strong>redacted skeleton</strong>: paths and types only, with any segment that looks like data (an email, an id, a long digit run, an over-long key) replaced by <code>~redacted</code>;</li>
+<li>the target contract;</li>
+<li>what is already resolved, and what is not.</li>
+</ul>
+<p>It never receives values, headers or bodies. This is stronger than &quot;PII scrubbing&quot; of values: there are no values to scrub, and the key names that might themselves be data are redacted too.</p>
+<h3 id="73-verifying-an-untrusted-proposer">7.3 Verifying an untrusted proposer<a class="anchor" href="#73-verifying-an-untrusted-proposer" aria-label="Link to this section">#</a></h3>
+<p>Key names come from the upstream, so they are attacker-controlled text inside a prompt — a textbook prompt-injection channel. SHIPRTCL does not try to make the model trustworthy. It makes the model&#39;s output <strong>checkable</strong>:</p>
+<ol>
+<li>it must parse as SML;</li>
+<li>it may use only <code>to</code>, <code>from</code>, <code>cast</code> and <code>each</code> — never <code>const</code>, <code>default</code>, <code>enum</code> or <code>scale</code>, so it cannot introduce or rescale a value;</li>
+<li>every <code>from</code> must exist in the skeleton, and no redacted path may be read;</li>
+<li>every <code>to</code> must exist in the contract.</li>
+</ol>
+<p>Output that fails any check is discarded in full. The worst a successful injection can achieve is a <strong>wrong-but-valid mapping</strong>: a real source field copied into a real target field of a compatible type. That is a real risk, and §8 exists to contain it. But it is bounded, visible in the rule, and reversible. It cannot exfiltrate data, execute code, or fabricate values.</p>
+<h2 id="8-lifecycle-provenance-and-audit">8. Lifecycle, provenance and audit<a class="anchor" href="#8-lifecycle-provenance-and-audit" aria-label="Link to this section">#</a></h2>
+<p>Every rule records its <strong>method</strong> (<code>deterministic</code>, <code>llm</code> or <code>human</code>), the model identifier if one was used, a <strong>confidence</strong>, a timestamp and notes. Rules move between four states:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Delivered</th>
+<th>Typical cause</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>proposed</code></td>
+<td>no</td>
+<td>failed validation on its first payload</td>
+</tr>
+<tr>
+<td><code>shadow</code></td>
+<td>no</td>
+<td>valid, but below the activation policy — output held for review</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>yes</td>
+<td>in use</td>
+</tr>
+<tr>
+<td><code>retired</code></td>
+<td>no</td>
+<td>withdrawn; matching payloads re-enter resolution</td>
+</tr>
+</tbody></table>
+<p>The default policy activates deterministic rules at confidence ≥ 0.8 and holds every model-assisted rule in <code>shadow</code> until a human approves it. Operators can loosen this where speed matters more than review, for example for analytics events, and tighten it where review matters more, for example for money movement.</p>
+<p>Every decision emits a <strong>CloudEvents 1.0</strong> event: <code>drift.detected</code> (with the structural diff), <code>drift.absorbed</code>, <code>rule.created</code>, <code>rule.activated</code>, <code>rule.retired</code>, <code>rule.suspect</code>, <code>payload.translated</code>, <code>payload.held</code> and <code>payload.quarantined</code>. Event data never contains payload values, so the audit stream can flow to ordinary logging infrastructure. Because the format is standard, it plugs straight into existing event routers.</p>
+<p>This is what &quot;self-healing&quot; means in SHIPRTCL. It does not mean the system silently changes behaviour. It means the system proposes a fix, applies it only when policy allows, and leaves a complete, value-free record of what changed and why.</p>
+<h2 id="9-runtime">9. Runtime<a class="anchor" href="#9-runtime" aria-label="Link to this section">#</a></h2>
+<h3 id="91-proxy-behaviour">9.1 Proxy behaviour<a class="anchor" href="#91-proxy-behaviour" aria-label="Link to this section">#</a></h3>
+<p>The reference proxy (<code>shiprtcl serve</code>) exposes <code>POST /in/{contract}</code> and:</p>
+<ol>
+<li>reads the body up to a size limit;</li>
+<li><strong>verifies the upstream signature on the raw body</strong> — GitHub&#39;s <code>X-Hub-Signature-256</code>, Stripe&#39;s timestamped <code>Stripe-Signature</code>, or a generic HMAC — before anything is parsed;</li>
+<li>parses the media type, returning <code>400</code> or <code>415</code> immediately on failure;</li>
+<li>assigns a stable message id and drops duplicates within 24 hours;</li>
+<li>returns <strong><code>202 Accepted</code></strong> and continues asynchronously, so upstream timeouts and synthesis latency are decoupled;</li>
+<li>resolves, applies and validates;</li>
+<li>delivers with retries and backoff, <strong>re-signing with Standard Webhooks</strong> [Standard Webhooks] and adding <code>shiprtcl-fingerprint</code> and <code>shiprtcl-rule</code> headers;</li>
+<li>quarantines anything held, invalid or undeliverable, <strong>encrypted with AES-256-GCM</strong> when a key is configured.</li>
+</ol>
+<p>Re-signing matters. Translation necessarily breaks the upstream&#39;s signature, and a proxy that forwards unsigned payloads would quietly remove a security control. With SHIPRTCL, trust is verified at the edge and re-established toward the consumer with a widely implemented scheme.</p>
+<p>Rules persist durably, in an atomically rewritten JSON file in the reference implementation. A cache such as Redis may front the store, but it must never be the only copy. An early draft of this design kept rules only in Redis with eviction enabled. That is a configuration under which &quot;permanent&quot; rules can be evicted, or under which writes fail once memory is full.</p>
+<h3 id="92-performance">9.2 Performance<a class="anchor" href="#92-performance" aria-label="Link to this section">#</a></h3>
+<p>The fast path is linear in payload size: one parse, one tree walk, one SHA-256, one map lookup, one rule application, one validation. We measured the reference implementation — plain TypeScript on Node.js 22, without native code — on an AMD EPYC 9354P virtual machine (2 vCPU), using a 1,445-byte Stripe-style invoice event with 41 shape entries, five line items and a metadata map, over 20,000 iterations after warm-up:</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>p50</th>
+<th>p99</th>
+<th>Throughput per core</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fingerprint (parse + shape + SHA-256)</td>
+<td>0.147 ms</td>
+<td>0.411 ms</td>
+<td>~5,900 / s</td>
+</tr>
+<tr>
+<td>Full fast path (parse → fingerprint → lookup → apply → validate)</td>
+<td>0.193 ms</td>
+<td>0.578 ms</td>
+<td>~4,600 / s</td>
+</tr>
+</tbody></table>
+<p>The benchmark is in the repository (<code>npm run bench</code>), so these numbers can be reproduced and challenged. At these figures, ingestion overhead is negligible next to network latency. Native parsers and a shared cache are optimizations for very high volumes, not prerequisites. Synthesis costs one matcher pass (sub-millisecond) and, only if needed, one model call. Because results are cached per fingerprint and shared through single-flight, model cost scales with the number of <em>distinct structures</em>, not with traffic.</p>
+<h2 id="10-known-limitations">10. Known limitations<a class="anchor" href="#10-known-limitations" aria-label="Link to this section">#</a></h2>
+<p>We would rather list these than have readers discover them.</p>
+<ol>
+<li><strong>Semantic drift is invisible to structure.</strong> If a producer changes <code>amount</code> from dollars to cents, or renames enum values from <code>paid</code> to <code>succeeded</code>, without changing types, the fingerprint is unchanged and SHIPRTCL will not notice. Contracts can catch some such changes through <code>enum</code>, <code>minimum</code> and <code>maximum</code>, which turn them into validation failures. Value-distribution monitoring is future work.</li>
+<li><strong>Valid is not correct.</strong> A rule can map the wrong field into a field of the same type — two strings swapped — and still validate. Confidence scores, shadow mode, human review for sensitive contracts and complete provenance mitigate this. They do not eliminate it.</li>
+<li><strong>The matcher is English-centric.</strong> Tokenization and synonyms assume English-like key names. Other languages, and abbreviations outside the synonym table, fall through to the optional model or to a human.</li>
+<li><strong>Map classification is heuristic.</strong> Free-form metadata keys such as <code>campaign</code> or <code>utm_source</code> look like schema, so they need a <code>mapHints</code> entry. Conversely, a schema whose real keys are numeric would be misclassified as a map. Contracts can override both cases.</li>
+<li><strong>SML is intentionally limited.</strong> In v0.1 it cannot concatenate or split strings, convert date formats, cast the elements of scalar arrays, or compute values. Those belong downstream, or in a future, equally verifiable extension.</li>
+<li><strong>Format coverage.</strong> The specification covers JSON, form bodies, CSV/TSV, XML and YAML. The reference implementation covers JSON, form bodies and CSV/TSV. Form bodies with sometimes-repeated keys produce two shapes, which absorption usually merges.</li>
+<li><strong>The reference proxy is single-node.</strong> Deduplication is in memory, rules live in a local file, and there is no replay UI. It demonstrates the runtime requirements. It is not yet a production gateway.</li>
+<li><strong>The proxy is a trusted intermediary.</strong> It sees plaintext payloads and holds signing secrets, so it must run inside, or be contractually bound to, the consumer&#39;s trust boundary. &quot;Zero code&quot; does not mean &quot;zero trust&quot;.</li>
+<li><strong>No synthesis-quality benchmark yet.</strong> We have not published accuracy numbers for the matcher or for model-assisted synthesis against a labelled corpus of real-world drifts. Building that corpus openly is the most valuable contribution the community could make. Valentine [Koutras et al. 2021] is a model for how such an evaluation could be run.</li>
+<li><strong>Draft status.</strong> The fingerprint algorithm may change before 1.0. If it does, the <code>sr1</code> prefix will change, so old and new fingerprints can never be confused.</li>
+</ol>
+<h2 id="11-roadmap">11. Roadmap<a class="anchor" href="#11-roadmap" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>0.2:</strong> XML and YAML in the reference implementation; contract importers for OpenAPI and Zod; a replay API for quarantine; a durable SQLite store.</li>
+<li><strong>0.3:</strong> an open drift corpus and evaluation harness; publication of matcher accuracy; a second implementation in Rust or Go, to prove the specification stands on its own.</li>
+<li><strong>1.0:</strong> a frozen fingerprint algorithm and SML, a conformance badge, and a governance hand-off to a multi-stakeholder group if adoption warrants it.</li>
+</ul>
+<p>Proposals follow a lightweight SHIPRTCL Enhancement Proposal (SEP) process, described in the repository.</p>
+<h2 id="12-conclusion">12. Conclusion<a class="anchor" href="#12-conclusion" aria-label="Link to this section">#</a></h2>
+<p>Third-party data will keep changing shape. That cannot be prevented, but it can stop being an incident. By separating recognition (cheap, exact, every request) from resolution (rare, careful, recorded), SHIPRTCL turns drift from an outage into a reviewable configuration change. Language models are useful here precisely because the design does not trust them: they see no data, they can propose only what can be checked, and their proposals pass through the same lifecycle as a human&#39;s.</p>
+<p>The specification is short enough to read in an afternoon, the vectors are strict enough to implement against, and the playground runs entirely in your browser. We invite implementers, webhook producers and anyone who has been paged for a renamed field to try it, break it and improve it.</p>
+<h2 id="references">References<a class="anchor" href="#references" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>[Avro] Apache Software Foundation. <em>Apache Avro Specification</em> — &quot;Parsing Canonical Form for Schemas&quot; and &quot;Schema Fingerprints&quot;.</li>
+<li>[CloudEvents] Cloud Native Computing Foundation. <em>CloudEvents Specification, Version 1.0</em>.</li>
+<li>[Koutras et al. 2021] C. Koutras, G. Siachamis, A. Ionescu, K. Psarakis, J. Brons, M. Fragkoulis, C. Lofi, A. Bonifati, A. Katsifodimos. &quot;Valentine: Evaluating Matching Techniques for Dataset Discovery.&quot; <em>IEEE ICDE</em>, 2021.</li>
+<li>[Leach 2017] B. Leach. &quot;APIs as infrastructure: future-proofing Stripe with versioning.&quot; Stripe Engineering Blog, 2017.</li>
+<li>[Rahm &amp; Bernstein 2001] E. Rahm, P. A. Bernstein. &quot;A survey of approaches to automatic schema matching.&quot; <em>The VLDB Journal</em> 10(4), 2001.</li>
+<li>[RFC 6901] P. Bryan, K. Zyp, M. Nottingham. <em>JavaScript Object Notation (JSON) Pointer</em>. IETF, 2013.</li>
+<li>[RFC 8785] A. Rundgren, B. Jordan, S. Erdtman. <em>JSON Canonicalization Scheme (JCS)</em>. IETF, 2020.</li>
+<li>[RFC 9413] M. Thomson, D. Schinazi. <em>Maintaining Robust Protocols</em>. IETF, 2023.</li>
+<li>[Standard Webhooks] <em>Standard Webhooks Specification</em>. <a href="https://www.standardwebhooks.com">https://www.standardwebhooks.com</a>.</li>
+<li>[JSON Schema] <em>JSON Schema: A Media Type for Describing JSON Documents</em>, draft 2020-12.</li>
+<li>[UAX #15] Unicode Consortium. <em>Unicode Normalization Forms</em>.</li>
+</ul>
+<hr>
+<p><em>Cite this work:</em> Archik, S. (2026). <em>SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules</em> (Version 0.1, Draft). <a href="https://shiprtcl.org/whitepaper/">https://shiprtcl.org/whitepaper/</a></p>
+</article>
+</div><script>(()=>{const l=[...document.querySelectorAll('.toc a')];const m=new Map(l.map(a=>[a.getAttribute('href').slice(1),a]));const o=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){l.forEach(a=>a.classList.remove('on'));m.get(e.target.id)?.classList.add('on')}},{rootMargin:'-80px 0px -70% 0px'});document.querySelectorAll('.prose h2[id],.prose h3[id]').forEach(h=>o.observe(h))})();</script></main>
+<footer class="foot"><div class="wrap">
+  <div>SHIPRTCL v0.1 draft · created by Srishesh Archik · spec CC-BY-4.0 · code Apache-2.0</div>
+  <nav aria-label="Footer">
+    <a href="https://github.com/shiprtcl/shiprtcl">GitHub</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/blob/main/CONTRIBUTING.md">Contribute</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/blob/main/GOVERNANCE.md">Governance</a>
+    <a href="https://github.com/shiprtcl/shiprtcl/security/policy">Security</a>
+    <a href="/conformance/fingerprint-vectors.json">Vectors</a>
+  </nav>
+</div></footer>
+
+</body>
+</html>
