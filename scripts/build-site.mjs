@@ -122,7 +122,7 @@ ${jsonld}
 function foot(meta) {
   return `</main>
 <footer class="foot"><div class="wrap">
-  <div>SHIPRTCL v${VERSION} draft · created by ${AUTHOR} · spec CC-BY-4.0 · code Apache-2.0</div>
+  <div>SHIPRTCL v${VERSION} draft · created by ${AUTHOR} · <a href="https://doi.org/10.5281/zenodo.23747811">DOI 10.5281/zenodo.23747811</a> · spec CC-BY-4.0 · code Apache-2.0</div>
   <nav aria-label="Footer">
     <a href="${REPO}">GitHub</a>
     <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>

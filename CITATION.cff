@@ -6,7 +6,15 @@ type: software
 authors:
   - given-names: Srishesh
     family-names: Archik
-version: "0.1.0"
+version: "0.1.1"
+doi: 10.5281/zenodo.23747811
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23747811
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: 10.5281/zenodo.23747812
+    description: "v0.1.0"
 date-released: "2026-10-29"
 license: Apache-2.0
 url: "https://shiprtcl.org"

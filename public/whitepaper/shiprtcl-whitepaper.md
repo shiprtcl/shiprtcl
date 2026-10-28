@@ -301,4 +301,4 @@ The specification is short enough to read in an afternoon, the vectors are stric
 
 ---
 
-*Cite this work:* Archik, S. (2026). *SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules* (Version 0.1, Draft). https://shiprtcl.org/whitepaper/
+*Cite this work:* Archik, S. (2026). *SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules* (Version 0.1, Draft). Zenodo. https://doi.org/10.5281/zenodo.23747812

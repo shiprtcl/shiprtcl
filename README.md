@@ -15,6 +15,8 @@
   <img alt="status: draft" src="https://img.shields.io/badge/spec-v0.1%20draft-b35c00">
   <img alt="code license" src="https://img.shields.io/badge/code-Apache--2.0-0b8f6a">
   <img alt="spec license" src="https://img.shields.io/badge/spec-CC--BY--4.0-5b4bb7">
+  <a href="https://www.npmjs.com/package/shiprtcl"><img alt="npm" src="https://img.shields.io/npm/v/shiprtcl?color=0b8f6a"></a>
+  <a href="https://doi.org/10.5281/zenodo.23747811"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.23747811.svg"></a>
   <a href="https://github.com/shiprtcl/shiprtcl/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/shiprtcl/shiprtcl/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
@@ -62,10 +64,10 @@ echo '{"event":"paid","customer":{"id":1}}' | node packages/shiprtcl/dist/cli.js
 cp examples/shiprtcl.config.json . && node packages/shiprtcl/dist/cli.js serve shiprtcl.config.json
 ```
 
-As a library:
+As a library (`npm i shiprtcl`):
 
 ```ts
-import { Engine } from 'shiprtcl'; // npm publish pending — build from source for now
+import { Engine } from 'shiprtcl';
 
 const engine = new Engine({
   contracts: [{ id: 'payments.v1', schema: { type: 'object', required: ['event'], properties: { event: { type: 'string' } } } }],
@@ -108,7 +110,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md) a
 
 See [CITATION.cff](CITATION.cff), or:
 
-> Archik, S. (2026). *SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules* (v0.1, Draft). https://shiprtcl.org/whitepaper/
+> Archik, S. (2026). *SHIPRTCL: Self-Healing Ingestion with Structural Fingerprints and Lazily Synthesized Mapping Rules* (v0.1.0, Draft). Zenodo. https://doi.org/10.5281/zenodo.23747812
 
 ## License
 

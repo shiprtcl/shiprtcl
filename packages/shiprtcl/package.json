@@ -1,6 +1,6 @@
 {
   "name": "shiprtcl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reference implementation of SHIPRTCL, the Self-Healing Ingestion Protocol: structural fingerprinting, declarative mapping rules and a drift-tolerant ingestion proxy.",
   "license": "Apache-2.0",
   "type": "module",
@@ -38,6 +38,7 @@
     }
   },
   "bin": {
+    "shiprtcl": "./dist/cli.js",
     "shiprtcl-proxy": "./dist/cli.js"
   },
   "files": [

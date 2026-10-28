@@ -2,6 +2,14 @@
 
 All notable changes to the SHIPRTCL specification and reference implementation.
 
+## [0.1.1] — 2026-10-29
+
+### Fixed
+- The package now installs the `shiprtcl` command documented in the README (0.1.0 only installed `shiprtcl-proxy`, which is kept as an alias).
+
+### Added
+- Zenodo DOI ([10.5281/zenodo.23747811](https://doi.org/10.5281/zenodo.23747811)) in README, CITATION.cff and the whitepaper.
+
 ## [0.1.0] — 2026-10-29
 
 First public draft.
